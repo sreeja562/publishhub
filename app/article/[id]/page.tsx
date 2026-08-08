@@ -209,10 +209,13 @@ const articles = [
 export default function ArticlePage() {
   const params = useParams();
 
-  const id = Number(params.id);
+  // Get the ID safely from the URL
+  const articleId = Array.isArray(params.id)
+    ? params.id[0]
+    : params.id;
 
   const article = articles.find(
-    (item) => item.id === id
+    (item) => item.id === Number(articleId)
   );
 
   const [liked, setLiked] = useState(false);
@@ -221,9 +224,9 @@ export default function ArticlePage() {
 
   if (!article) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-50">
+      <main className="flex min-h-screen items-center justify-center bg-white px-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold text-gray-900">
             Article Not Found
           </h1>
 
@@ -243,7 +246,7 @@ export default function ArticlePage() {
   }
 
   const handleLike = () => {
-    setLiked(!liked);
+    setLiked((previous) => !previous);
 
     setLikes((current) =>
       liked ? current - 1 : current + 1
@@ -263,7 +266,7 @@ export default function ArticlePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f8f8f6] text-[#111111]">
+    <main className="min-h-screen bg-white">
 
       {/* NAVBAR */}
 
@@ -321,6 +324,7 @@ export default function ArticlePage() {
 
       </header>
 
+
       {/* ARTICLE HEADER */}
 
       <section className="bg-white">
@@ -346,6 +350,7 @@ export default function ArticlePage() {
           <p className="mt-6 text-lg leading-8 text-gray-500 md:text-xl">
             {article.description}
           </p>
+
 
           {/* AUTHOR */}
 
@@ -387,6 +392,7 @@ export default function ArticlePage() {
 
       </section>
 
+
       {/* FEATURED IMAGE */}
 
       <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
@@ -398,6 +404,7 @@ export default function ArticlePage() {
         />
 
       </div>
+
 
       {/* ARTICLE CONTENT */}
 
@@ -431,6 +438,7 @@ export default function ArticlePage() {
 
         ))}
 
+
         {/* ACTION BAR */}
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-y border-black/10 py-5">
@@ -448,16 +456,16 @@ export default function ArticlePage() {
 
               <Heart
                 size={18}
-                fill={
-                  liked ? "currentColor" : "none"
-                }
+                fill={liked ? "currentColor" : "none"}
               />
 
               {likes}
 
             </button>
 
-            <button className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100">
+            <button
+              className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100"
+            >
 
               <MessageCircle size={18} />
 
@@ -467,11 +475,12 @@ export default function ArticlePage() {
 
           </div>
 
+
           <div className="flex gap-3">
 
             <button
               onClick={() =>
-                setBookmarked(!bookmarked)
+                setBookmarked((previous) => !previous)
               }
               className={`rounded-full border p-2.5 ${
                 bookmarked
@@ -503,6 +512,7 @@ export default function ArticlePage() {
           </div>
 
         </div>
+
 
         {/* AUTHOR CARD */}
 
@@ -540,6 +550,7 @@ export default function ArticlePage() {
           </div>
 
         </div>
+
 
         {/* COMMENTS */}
 
@@ -583,6 +594,7 @@ export default function ArticlePage() {
         </section>
 
       </article>
+
 
       {/* FOOTER */}
 

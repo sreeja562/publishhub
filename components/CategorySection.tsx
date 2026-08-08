@@ -1,3 +1,5 @@
+import SearchBar from "@/components/SearchBar";
+
 const categories = [
   "Technology",
   "Programming",
@@ -9,21 +11,40 @@ const categories = [
 
 export default function CategorySection() {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-12">
-      <h2 className="text-3xl font-bold mb-8">
-        Browse Categories
-      </h2>
+    <section className="mx-auto max-w-7xl px-6 py-16">
 
+      {/* Heading */}
+      <div className="mb-8">
+        <p className="text-sm font-semibold uppercase tracking-widest text-[#7C3AED]">
+          Explore
+        </p>
+
+        <h2 className="mt-2 text-3xl font-bold text-gray-900">
+          Browse Categories
+        </h2>
+
+        <p className="mt-3 text-gray-500">
+          Explore publications by topic and discover something interesting.
+        </p>
+      </div>
+
+      {/* Search Bar */}
+      <div className="mb-8 max-w-2xl">
+        <SearchBar />
+      </div>
+
+      {/* Categories */}
       <div className="flex flex-wrap gap-4">
         {categories.map((category) => (
           <button
             key={category}
-            className="px-5 py-3 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition"
+            className="rounded-full border border-gray-200 bg-white px-6 py-3 font-medium text-gray-700 shadow-sm transition hover:border-[#7C3AED] hover:bg-[#7C3AED] hover:text-white"
           >
             {category}
           </button>
         ))}
       </div>
+
     </section>
   );
 }
