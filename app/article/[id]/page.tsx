@@ -17,6 +17,20 @@ import {
   removeBookmark,
 } from "@/lib/bookmarks";
 
+import {
+  getComments,
+  addComment,
+  removeComment,
+  type Comment,
+} from "@/lib/comments";
+
+import {
+  getLikes,
+  addLike,
+  removeLike,
+  isLiked,
+} from "@/lib/likes";
+
 const articles = [
   {
     id: 1,
@@ -221,13 +235,20 @@ export default function ArticlePage() {
     (item) => item.id === id
   );
 
-  const [liked, setLiked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
-  const [likes, setLikes] = useState(128);
+const [liked, setLiked] = useState(false);
+const [bookmarked, setBookmarked] = useState(false);
+const [likes, setLikes] = useState(128);
 
-  useEffect(() => {
+const [comments, setComments] = useState<Comment[]>([]);
+const [commentText, setCommentText] = useState("");
+
+useEffect(() => {
   if (article) {
     setBookmarked(isBookmarked(article.id));
+    setLiked(isLiked(article.id));
+    setLikes(getLikes(article.id));
+
+    setComments(getComments(article.id));
   }
 }, [article]);
 
@@ -255,12 +276,49 @@ export default function ArticlePage() {
   }
 
   const handleLike = () => {
-    setLiked(!liked);
+  if (liked) {
+    const updatedLikes = removeLike(article.id);
 
-    setLikes((current) =>
-      liked ? current - 1 : current + 1
-    );
-  };
+    setLiked(false);
+    setLikes(updatedLikes);
+  } else {
+    const updatedLikes = addLike(article.id);
+
+    setLiked(true);
+    setLikes(updatedLikes);
+  }
+};
+  const handleAddComment = () => {
+  const text = commentText.trim();
+
+  if (!text || !article) {
+    return;
+  }
+
+  const newComment = addComment(
+    article.id,
+    "You",
+    text
+  );
+
+  setComments((current) => [
+    ...current,
+    newComment,
+  ]);
+
+  setCommentText("");
+};
+
+const handleRemoveComment = (commentId: string) => {
+  removeComment(commentId);
+
+  setComments((current) =>
+    current.filter(
+      (comment) => comment.id !== commentId
+    )
+  );
+};
+
 
   const handleShare = async () => {
     try {
@@ -568,44 +626,136 @@ export default function ArticlePage() {
 
         {/* COMMENTS */}
 
-        <section className="mt-14">
+        {/* COMMENTS */}
 
-          <div className="flex items-center gap-2">
+<section className="mt-14">
 
-            <MessageCircle size={21} />
+  <div className="flex items-center gap-2">
 
-            <h2 className="text-2xl font-semibold">
-              Comments
-            </h2>
+    <MessageCircle size={21} />
 
-          </div>
+    <h2 className="text-2xl font-semibold">
+      Comments
+    </h2>
 
-          <div className="mt-6 rounded-2xl border border-black/10 bg-white p-5">
+    <span className="text-sm text-gray-400">
+      ({comments.length})
+    </span>
 
-            <textarea
-              rows={4}
-              placeholder="Share your thoughts..."
-              className="w-full resize-none bg-transparent text-sm outline-none"
-            />
+  </div>
 
-            <div className="mt-3 flex justify-end">
 
-              <button
-                onClick={() =>
-                  alert(
-                    "Comments will be connected to the backend later."
-                  )
-                }
-                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-600"
-              >
-                Post Comment
-              </button>
+  {/* COMMENT INPUT */}
+
+  <div className="mt-6 rounded-2xl border border-black/10 bg-white p-5">
+
+    <textarea
+      rows={4}
+      value={commentText}
+      onChange={(e) =>
+        setCommentText(e.target.value)
+      }
+      placeholder="Share your thoughts..."
+      className="w-full resize-none bg-transparent text-sm outline-none"
+    />
+
+    <div className="mt-3 flex justify-end">
+
+      <button
+        type="button"
+        onClick={handleAddComment}
+        disabled={!commentText.trim()}
+        className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Post Comment
+      </button>
+
+    </div>
+
+  </div>
+
+
+  {/* COMMENTS LIST */}
+
+  <div className="mt-6 space-y-4">
+
+    {comments.length === 0 ? (
+
+      <div className="rounded-2xl border border-black/5 bg-gray-50 p-6 text-center">
+
+        <MessageCircle
+          size={30}
+          className="mx-auto mb-3 text-gray-300"
+        />
+
+        <p className="text-sm font-medium text-gray-700">
+          No comments yet
+        </p>
+
+        <p className="mt-1 text-xs text-gray-400">
+          Be the first to share your thoughts.
+        </p>
+
+      </div>
+
+    ) : (
+
+      comments.map((comment) => (
+
+        <div
+          key={comment.id}
+          className="rounded-2xl border border-black/5 bg-white p-5"
+        >
+
+          <div className="flex items-start justify-between gap-4">
+
+            <div className="flex items-center gap-3">
+
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
+                {comment.author.charAt(0).toUpperCase()}
+              </div>
+
+              <div>
+
+                <p className="text-sm font-semibold">
+                  {comment.author}
+                </p>
+
+                <p className="text-xs text-gray-400">
+                  {comment.date}
+                </p>
+
+              </div>
 
             </div>
 
+
+            <button
+              type="button"
+              onClick={() =>
+                handleRemoveComment(comment.id)
+              }
+              className="text-xs text-gray-400 transition hover:text-red-600"
+            >
+              Delete
+            </button>
+
           </div>
 
-        </section>
+
+          <p className="mt-4 text-sm leading-7 text-gray-600">
+            {comment.text}
+          </p>
+
+        </div>
+
+      ))
+
+    )}
+
+  </div>
+
+</section>
 
       </article>
 
