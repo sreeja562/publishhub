@@ -7,7 +7,10 @@ import {
   MoreVertical,
   MessageCircle,
   Plus,
-  ArrowLeft,
+  UserRound,
+  BellOff,
+  Trash2,
+  Ban,
 } from "lucide-react";
 
 type Message = {
@@ -25,6 +28,8 @@ type Conversation = {
   time: string;
   unread: number;
   messages: Message[];
+  muted?: boolean;
+  blocked?: boolean;
 };
 
 type Reader = {
@@ -62,6 +67,8 @@ const initialConversations: Conversation[] = [
         time: "10:30 AM",
       },
     ],
+    muted: false,
+    blocked: false,
   },
 
   {
@@ -85,6 +92,8 @@ const initialConversations: Conversation[] = [
         time: "Yesterday",
       },
     ],
+    muted: false,
+    blocked: false,
   },
 
   {
@@ -108,6 +117,8 @@ const initialConversations: Conversation[] = [
         time: "Monday",
       },
     ],
+    muted: false,
+    blocked: false,
   },
 ];
 
@@ -164,6 +175,11 @@ export default function MessagesPage() {
   const [readerSearch, setReaderSearch] =
     useState("");
 
+  /* Three-dot menu state */
+
+  const [showChatMenu, setShowChatMenu] =
+    useState(false);
+
   const selectedConversation = conversations.find(
     (conversation) =>
       conversation.id === selectedId
@@ -192,9 +208,14 @@ export default function MessagesPage() {
   const sendMessage = () => {
     if (!message.trim()) return;
 
+    if (selectedConversation?.blocked) {
+      alert("This reader is blocked.");
+      return;
+    }
+
     const newMessage: Message = {
       id: Date.now(),
-      text: message,
+      text: message.trim(),
       sender: "me",
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
@@ -211,7 +232,7 @@ export default function MessagesPage() {
                 ...conversation.messages,
                 newMessage,
               ],
-              lastMessage: message,
+              lastMessage: message.trim(),
               time: "Just now",
             }
           : conversation
@@ -225,6 +246,8 @@ export default function MessagesPage() {
 
   const handleSelectConversation = (id: number) => {
     setSelectedId(id);
+
+    setShowChatMenu(false);
 
     setConversations((prev) =>
       prev.map((conversation) =>
@@ -242,11 +265,7 @@ export default function MessagesPage() {
 
   const startNewConversation = (
     reader: Reader
-  ) => {
-    /*
-      Check whether conversation already exists.
-    */
-
+   ) => {
     const existingConversation =
       conversations.find(
         (conversation) =>
@@ -258,13 +277,9 @@ export default function MessagesPage() {
       setShowNewMessage(false);
       setReaderSearch("");
       return;
-    }
+     }
 
-    /*
-      Create a new empty conversation.
-    */
-
-    const newConversation: Conversation = {
+        const newConversation: Conversation = {
       id: Date.now(),
       name: reader.name,
       avatar: reader.avatar,
@@ -272,6 +287,8 @@ export default function MessagesPage() {
       time: "Just now",
       unread: 0,
       messages: [],
+      muted: false,
+      blocked: false,
     };
 
     setConversations((prev) => [
@@ -284,6 +301,93 @@ export default function MessagesPage() {
     setShowNewMessage(false);
 
     setReaderSearch("");
+  };
+
+  /* ================= VIEW PROFILE ================= */
+
+  const viewProfile = () => {
+    if (!selectedConversation) return;
+
+    alert(
+      `Viewing ${selectedConversation.name}'s profile`
+    );
+
+    setShowChatMenu(false);
+  };
+
+  /* ================= MUTE / UNMUTE ================= */
+
+  const toggleMute = () => {
+    if (!selectedConversation) return;
+
+    setConversations((prev) =>
+      prev.map((conversation) =>
+        conversation.id === selectedId
+          ? {
+              ...conversation,
+              muted: !conversation.muted,
+            }
+          : conversation
+      )
+    );
+
+    setShowChatMenu(false);
+  };
+
+  /* ================= CLEAR CHAT ================= */
+
+  const clearChat = () => {
+    if (!selectedConversation) return;
+
+    const confirmed = window.confirm(
+      `Clear all messages with ${selectedConversation.name}?`
+    );
+
+    if (!confirmed) return;
+
+    setConversations((prev) =>
+      prev.map((conversation) =>
+        conversation.id === selectedId
+          ? {
+              ...conversation,
+              messages: [],
+              lastMessage: "No messages",
+              time: "Just now",
+            }
+          : conversation
+      )
+    );
+
+    setShowChatMenu(false);
+  };
+
+  /* ================= BLOCK READER ================= */
+
+  const toggleBlock = () => {
+    if (!selectedConversation) return;
+
+    const action = selectedConversation.blocked
+      ? "unblock"
+      : "block";
+
+    const confirmed = window.confirm(
+      `Are you sure you want to ${action} ${selectedConversation.name}?`
+    );
+
+    if (!confirmed) return;
+
+    setConversations((prev) =>
+      prev.map((conversation) =>
+        conversation.id === selectedId
+          ? {
+              ...conversation,
+              blocked: !conversation.blocked,
+            }
+          : conversation
+      )
+    );
+
+    setShowChatMenu(false);
   };
 
   return (
@@ -308,6 +412,7 @@ export default function MessagesPage() {
             {/* NEW MESSAGE BUTTON */}
 
             <button
+              type="button"
               onClick={() =>
                 setShowNewMessage(true)
               }
@@ -319,7 +424,7 @@ export default function MessagesPage() {
 
           </div>
 
-          {/* SEARCH EXISTING CONVERSATIONS */}
+          {/* SEARCH */}
 
           <div className="relative mt-4">
 
@@ -367,6 +472,7 @@ export default function MessagesPage() {
 
                 <button
                   key={conversation.id}
+                  type="button"
                   onClick={() =>
                     handleSelectConversation(
                       conversation.id
@@ -430,6 +536,7 @@ export default function MessagesPage() {
 
       </div>
 
+
       {/* ================================================= */}
       {/* RIGHT SIDE CHAT */}
       {/* ================================================= */}
@@ -440,7 +547,7 @@ export default function MessagesPage() {
 
           {/* CHAT HEADER */}
 
-          <div className="flex items-center justify-between border-b p-4">
+          <div className="relative flex items-center justify-between border-b p-4">
 
             <div className="flex items-center gap-3">
 
@@ -454,26 +561,148 @@ export default function MessagesPage() {
                   {selectedConversation.name}
                 </h2>
 
-                <p className="text-xs text-green-600">
-                  Reader
+                <p
+                  className={`text-xs ${
+                    selectedConversation.blocked
+                      ? "text-red-500"
+                      : selectedConversation.muted
+                      ? "text-gray-400"
+                      : "text-green-600"
+                  }`}
+                >
+                  {selectedConversation.blocked
+                    ? "Blocked"
+                    : selectedConversation.muted
+                    ? "Notifications muted"
+                    : "Reader"}
                 </p>
 
               </div>
 
             </div>
 
-            <button className="rounded-full p-2 hover:bg-gray-100">
-              <MoreVertical className="h-5 w-5 text-gray-500" />
-            </button>
+
+            {/* ================= THREE DOT MENU ================= */}
+
+            <div className="relative">
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowChatMenu(
+                    !showChatMenu
+                  )
+                }
+                className="rounded-full p-2 transition hover:bg-gray-100"
+                aria-label="Chat options"
+              >
+                <MoreVertical className="h-5 w-5 text-gray-500" />
+              </button>
+
+
+              {/* DROPDOWN */}
+
+              {showChatMenu && (
+
+                <div className="absolute right-0 top-11 z-50 w-52 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-xl">
+
+                  {/* VIEW PROFILE */}
+
+                  <button
+                    type="button"
+                    onClick={viewProfile}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-gray-700 transition hover:bg-gray-50"
+                  >
+                    <UserRound size={17} />
+                    View Profile
+                  </button>
+
+
+                  {/* MUTE */}
+
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-gray-700 transition hover:bg-gray-50"
+                  >
+
+                    <BellOff size={17} />
+
+                    {selectedConversation.muted
+                      ? "Unmute Notifications"
+                      : "Mute Notifications"}
+
+                  </button>
+
+
+                  {/* CLEAR CHAT */}
+
+                  <button
+                    type="button"
+                    onClick={clearChat}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-gray-700 transition hover:bg-gray-50"
+                  >
+                    <Trash2 size={17} />
+                    Clear Chat
+                  </button>
+
+
+                  {/* BLOCK */}
+
+                  <button
+                    type="button"
+                    onClick={toggleBlock}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-red-600 transition hover:bg-red-50"
+                  >
+                    <Ban size={17} />
+
+                    {selectedConversation.blocked
+                      ? "Unblock Reader"
+                      : "Block Reader"}
+
+                  </button>
+
+                </div>
+
+              )}
+
+            </div>
 
           </div>
 
+
+          {/* ================================================= */}
           {/* MESSAGES */}
+          {/* ================================================= */}
 
           <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 p-6">
 
-            {selectedConversation.messages.length ===
-            0 ? (
+            {selectedConversation.blocked ? (
+
+              <div className="flex h-full items-center justify-center">
+
+                <div className="text-center">
+
+                  <Ban
+                    size={35}
+                    className="mx-auto text-red-300"
+                  />
+
+                  <p className="mt-3 text-sm font-medium text-gray-600">
+                    {selectedConversation.name} is blocked
+                  </p>
+
+                  <p className="mt-1 text-xs text-gray-400">
+                    Unblock this reader from the menu
+                    to continue messaging.
+                  </p>
+
+                </div>
+
+              </div>
+
+            ) : selectedConversation.messages.length ===
+              0 ? (
 
               <div className="flex h-full items-center justify-center">
 
@@ -540,7 +769,10 @@ export default function MessagesPage() {
 
           </div>
 
+
+          {/* ================================================= */}
           {/* MESSAGE INPUT */}
+          {/* ================================================= */}
 
           <div className="border-t bg-white p-4">
 
@@ -548,8 +780,15 @@ export default function MessagesPage() {
 
               <input
                 type="text"
-                placeholder="Write a message..."
+                placeholder={
+                  selectedConversation.blocked
+                    ? "Reader is blocked"
+                    : "Write a message..."
+                }
                 value={message}
+                disabled={
+                  selectedConversation.blocked
+                }
                 onChange={(e) =>
                   setMessage(e.target.value)
                 }
@@ -558,12 +797,16 @@ export default function MessagesPage() {
                     sendMessage();
                   }
                 }}
-                className="flex-1 rounded-full bg-gray-100 px-5 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 rounded-full bg-gray-100 px-5 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
 
               <button
+                type="button"
+                disabled={
+                  selectedConversation.blocked
+                }
                 onClick={sendMessage}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white transition hover:bg-blue-700"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
                 <Send className="h-5 w-5" />
               </button>
@@ -595,6 +838,7 @@ export default function MessagesPage() {
 
       )}
 
+
       {/* ================================================= */}
       {/* NEW MESSAGE MODAL */}
       {/* ================================================= */}
@@ -616,12 +860,14 @@ export default function MessagesPage() {
                 </h2>
 
                 <p className="mt-1 text-xs text-gray-400">
-                  Search your followers to start a conversation.
+                  Search your followers to start a
+                  conversation.
                 </p>
 
               </div>
 
               <button
+                type="button"
                 onClick={() => {
                   setShowNewMessage(false);
                   setReaderSearch("");
@@ -632,6 +878,7 @@ export default function MessagesPage() {
               </button>
 
             </div>
+
 
             {/* SEARCH READERS */}
 
@@ -657,6 +904,7 @@ export default function MessagesPage() {
 
               </div>
 
+
               {/* FOLLOWERS */}
 
               <div className="mt-4 max-h-72 overflow-y-auto">
@@ -677,6 +925,7 @@ export default function MessagesPage() {
 
                     <button
                       key={reader.id}
+                      type="button"
                       onClick={() =>
                         startNewConversation(
                           reader
@@ -690,6 +939,7 @@ export default function MessagesPage() {
                       <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
                         {reader.avatar}
                       </div>
+
 
                       {/* USER */}
 
