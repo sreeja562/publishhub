@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Heart,
@@ -10,6 +10,12 @@ import {
   Share2,
   MessageCircle,
 } from "lucide-react";
+
+import {
+  addBookmark,
+  isBookmarked,
+  removeBookmark,
+} from "@/lib/bookmarks";
 
 const articles = [
   {
@@ -218,6 +224,12 @@ export default function ArticlePage() {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [likes, setLikes] = useState(128);
+
+  useEffect(() => {
+  if (article) {
+    setBookmarked(isBookmarked(article.id));
+  }
+}, [article]);
 
   if (!article) {
     return (
@@ -470,26 +482,39 @@ export default function ArticlePage() {
           <div className="flex gap-3">
 
             <button
-              onClick={() =>
-                setBookmarked(!bookmarked)
-              }
-              className={`rounded-full border p-2.5 ${
-                bookmarked
-                  ? "border-black bg-black text-white"
-                  : "border-black/10 text-gray-600 hover:bg-gray-100"
-              }`}
-            >
+  onClick={() => {
+    if (bookmarked) {
+      removeBookmark(article.id);
+      setBookmarked(false);
+    } else {
+      addBookmark({
+        id: article.id,
+        title: article.title,
+        description: article.description,
+        author: article.author,
+        username: article.username,
+        category: article.category,
+        date: article.date,
+        readTime: article.readTime,
+        image: article.image,
+        avatar: article.avatar,
+      });
 
-              <Bookmark
-                size={18}
-                fill={
-                  bookmarked
-                    ? "currentColor"
-                    : "none"
-                }
-              />
-
-            </button>
+      setBookmarked(true);
+    }
+  }}
+  aria-label={bookmarked ? "Remove bookmark" : "Bookmark article"}
+  className={`rounded-full border p-2.5 ${
+    bookmarked
+      ? "border-black bg-black text-white"
+      : "border-black/10 text-gray-600 hover:bg-gray-100"
+  }`}
+>
+  <Bookmark
+    size={18}
+    fill={bookmarked ? "currentColor" : "none"}
+  />
+</button>
 
             <button
               onClick={handleShare}

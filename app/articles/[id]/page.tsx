@@ -11,6 +11,7 @@ import {
   Clock3,
 } from "lucide-react";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 
 const articles = {
   "1": {
@@ -164,12 +165,9 @@ const articles = {
     },
   },
 };
+export default function ArticlePage() {
+  const params = useParams<{ id: string }>();
 
-export default function ArticlePage({
-  params,
-}: {
-  params: { id: string };
-}) {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
 
