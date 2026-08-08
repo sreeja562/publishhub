@@ -15,7 +15,7 @@ import {
   ArrowRight,
   Search,
 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 import {
   getBookmarks,
   type BookmarkedArticle,
@@ -56,14 +56,85 @@ const followedAuthors = [
   },
 ];
 
-export default function ReaderDashboard() {
-const [savedArticles, setSavedArticles] = useState<BookmarkedArticle[]>([]);
+type LoggedInUser = {
+  name: string;
+  email: string;
+  role: string;
+};
 
-useEffect(() => {
-  setSavedArticles(getBookmarks());
-}, []);
+export default function ReaderDashboard() {
+  const router = useRouter();
+
+  const [savedArticles, setSavedArticles] = useState<
+    BookmarkedArticle[]
+  >([]);
+
+  const [user, setUser] = useState<LoggedInUser | null>(null);
+
+  useEffect(() => {
+    function checkUser() {
+      const storedUser = localStorage.getItem("publishhubUser");
+
+      if (!storedUser) {
+        router.replace("/login");
+        return;
+      }
+
+      try {
+        const parsedUser = JSON.parse(storedUser);
+
+        if (
+          parsedUser.role !== "reader" &&
+          parsedUser.role !== "reader-author"
+        ) {
+          router.replace("/login");
+          return;
+        }
+
+        setUser(parsedUser);
+        setSavedArticles(getBookmarks());
+      } catch {
+        localStorage.removeItem("publishhubUser");
+        router.replace("/login");
+      }
+    }
+
+    checkUser();
+
+    const handleLogout = () => {
+      router.replace("/");
+    };
+
+    window.addEventListener("publishhub-logout", handleLogout);
+
+    return () => {
+      window.removeEventListener("publishhub-logout", handleLogout);
+    };
+  }, [router]);
+
+  /*
+   * Don't render the dashboard until we confirm
+   * that the user is logged in.
+   */
+  if (!user) {
+    return null;
+  }
+
+  const avatarLetter =
+    user.name?.charAt(0).toUpperCase() || "U";
+
+  function handleLogout() {
+    localStorage.removeItem("publishhubUser");
+
+    window.dispatchEvent(
+      new Event("publishhub-logout")
+    );
+
+    router.replace("/");
+  }
+
   return (
-    <main className="min-h-screen bg-[#fafaf8] text-gray-900">
+    <main className="min-h-screen bg-[#fafafa]">
 
       {/* ================= TOP NAVBAR ================= */}
 
@@ -71,12 +142,19 @@ useEffect(() => {
 
         <div className="flex h-16 items-center justify-between px-5 md:px-8">
 
+          {/* LOGO */}
+
           <Link
             href="/"
             className="text-2xl font-bold"
           >
-            Publish<span className="text-blue-600">Hub</span>
+            Publish
+            <span className="text-blue-600">
+              Hub
+            </span>
           </Link>
+
+          {/* RIGHT SIDE */}
 
           <div className="flex items-center gap-4">
 
@@ -89,7 +167,7 @@ useEffect(() => {
             </Link>
 
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
-              Y
+              {avatarLetter}
             </div>
 
           </div>
@@ -110,24 +188,25 @@ useEffect(() => {
 
           <div className="flex h-full flex-col p-5">
 
+
             {/* READER PROFILE */}
 
             <div className="mb-7 rounded-2xl bg-[#f8f8f6] p-4">
 
               <div className="flex items-center gap-3">
 
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600">
-                  Y
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600">
+                  {avatarLetter}
                 </div>
 
                 <div className="min-w-0">
 
-                  <p className="truncate text-sm font-semibold">
-                    Your Profile
+                  <p className="truncate text-sm font-semibold text-gray-900">
+                    {user.name}
                   </p>
 
                   <p className="truncate text-xs text-gray-400">
-                    Reader
+                    {user.email}
                   </p>
 
                 </div>
@@ -185,13 +264,14 @@ useEffect(() => {
 
             <div className="mt-auto border-t border-black/5 pt-4">
 
-              <Link
-                href="/"
-                className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-500 transition hover:bg-red-50 hover:text-red-600"
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-500 transition hover:bg-red-50 hover:text-red-600"
               >
                 <LogOut size={18} />
                 Log out
-              </Link>
+              </button>
 
             </div>
 
@@ -207,7 +287,7 @@ useEffect(() => {
           <div className="mx-auto max-w-7xl">
 
 
-            {/* MOBILE HEADER */}
+            {/* ================= MOBILE HEADER ================= */}
 
             <div className="mb-6 lg:hidden">
 
@@ -216,7 +296,7 @@ useEffect(() => {
               </p>
 
               <h1 className="mt-2 text-2xl font-semibold">
-                Welcome back 👋
+                Welcome back, {user.name} 👋
               </h1>
 
               <p className="mt-2 text-sm text-gray-500">
@@ -226,7 +306,7 @@ useEffect(() => {
             </div>
 
 
-            {/* DESKTOP HEADER */}
+            {/* ================= DESKTOP HEADER ================= */}
 
             <div className="hidden items-center justify-between lg:flex">
 
@@ -237,7 +317,7 @@ useEffect(() => {
                 </p>
 
                 <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">
-                  Welcome back 👋
+                  Welcome back, {user.name} 👋
                 </h1>
 
                 <p className="mt-2 text-sm text-gray-500">
@@ -261,11 +341,12 @@ useEffect(() => {
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-               <ReaderStatCard
-                 label="Saved Articles"
-                 value={String(savedArticles.length)}
-                 icon={<Bookmark size={20} />}
-               />
+              <ReaderStatCard
+                label="Saved Articles"
+                value={String(savedArticles.length)}
+                icon={<Bookmark size={20} />}
+              />
+
               <ReaderStatCard
                 label="Articles Read"
                 value="28"
@@ -292,12 +373,12 @@ useEffect(() => {
             <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_320px]">
 
 
-              {/* LEFT CONTENT */}
+              {/* ================= LEFT CONTENT ================= */}
 
               <div className="space-y-6">
 
 
-                {/* SAVED ARTICLES */}
+                {/* ================= SAVED ARTICLES ================= */}
 
                 <section className="rounded-3xl border border-black/5 bg-white">
 
@@ -327,91 +408,92 @@ useEffect(() => {
 
                   <div className="divide-y divide-black/5">
 
-  {savedArticles.length === 0 ? (
+                    {savedArticles.length === 0 ? (
 
-    <div className="px-6 py-10 text-center">
+                      <div className="px-6 py-10 text-center">
 
-      <Bookmark
-        size={32}
-        className="mx-auto text-gray-300"
-      />
+                        <Bookmark
+                          size={32}
+                          className="mx-auto text-gray-300"
+                        />
 
-      <p className="mt-3 text-sm font-medium text-gray-600">
-        No saved articles yet
-      </p>
+                        <p className="mt-3 text-sm font-medium text-gray-600">
+                          No saved articles yet
+                        </p>
 
-      <p className="mt-1 text-xs text-gray-400">
-        Bookmark articles you want to read later.
-      </p>
+                        <p className="mt-1 text-xs text-gray-400">
+                          Bookmark articles you want to read later.
+                        </p>
 
-      <Link
-        href="/articles"
-        className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:underline"
-      >
-        Explore Articles
-        <ArrowRight size={15} />
-      </Link>
+                        <Link
+                          href="/articles"
+                          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:underline"
+                        >
+                          Explore Articles
+                          <ArrowRight size={15} />
+                        </Link>
 
-    </div>
+                      </div>
 
-  ) : (
+                    ) : (
 
-    savedArticles.map((article) => (
-                      <Link
-                        key={article.id}
-                        href={`/article/${article.id}`}
-                        className="block px-6 py-5 transition hover:bg-[#fafafa]"
-                      >
+                      savedArticles.map((article) => (
 
-                        <div className="flex items-start gap-4">
+                        <Link
+                          key={article.id}
+                          href={`/article/${article.id}`}
+                          className="block px-6 py-5 transition hover:bg-[#fafafa]"
+                        >
 
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                            <Bookmark size={18} />
-                          </div>
+                          <div className="flex items-start gap-4">
 
-                          <div className="min-w-0 flex-1">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                              <Bookmark size={18} />
+                            </div>
 
-                            <div className="flex flex-wrap items-center gap-2">
+                            <div className="min-w-0 flex-1">
 
-                              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-blue-600">
-                                {article.category}
-                              </span>
+                              <div className="flex flex-wrap items-center gap-2">
 
-                              <span className="text-[10px] text-gray-400">
-                                {article.readTime}
-                              </span>
+                                <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-blue-600">
+                                  {article.category}
+                                </span>
+
+                                <span className="text-[10px] text-gray-400">
+                                  {article.readTime}
+                                </span>
+
+                              </div>
+
+                              <h3 className="mt-2 text-sm font-semibold">
+                                {article.title}
+                              </h3>
+
+                              <p className="mt-1 text-xs text-gray-400">
+                                By {article.author}
+                              </p>
 
                             </div>
 
-                            <h3 className="mt-2 text-sm font-semibold">
-                              {article.title}
-                            </h3>
-
-                            <p className="mt-1 text-xs text-gray-400">
-                              By {article.author}
-                            </p>
+                            <ArrowRight
+                              size={17}
+                              className="mt-2 shrink-0 text-gray-300"
+                            />
 
                           </div>
 
-                          <ArrowRight
-                            size={17}
-                            className="mt-2 shrink-0 text-gray-300"
-                          />
+                        </Link>
 
-                        </div>
+                      ))
 
-                      </Link>
+                    )}
 
-                    ))
+                  </div>
 
-                  )}
-
-                </div>
-
-              </section>
+                </section>
 
 
-                {/* RECENTLY READ */}
+                {/* ================= RECENTLY READ ================= */}
 
                 <section className="rounded-3xl border border-black/5 bg-white">
 
@@ -476,14 +558,17 @@ useEffect(() => {
                 </section>
 
 
-                {/* LIKED ARTICLES */}
+                {/* ================= LIKED ARTICLES ================= */}
 
                 <section className="rounded-3xl border border-black/5 bg-white p-6">
 
                   <div className="flex items-center gap-3">
 
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-500">
-                      <Heart size={18} fill="currentColor" />
+                      <Heart
+                        size={18}
+                        fill="currentColor"
+                      />
                     </div>
 
                     <div>
@@ -518,7 +603,7 @@ useEffect(() => {
               <div className="space-y-6">
 
 
-                {/* READING ACTIVITY */}
+                {/* ================= READING ACTIVITY ================= */}
 
                 <div className="rounded-3xl border border-black/5 bg-white p-6">
 
@@ -563,7 +648,7 @@ useEffect(() => {
                 </div>
 
 
-                {/* FOLLOWED AUTHORS */}
+                {/* ================= FOLLOWED AUTHORS ================= */}
 
                 <div className="rounded-3xl border border-black/5 bg-white p-6">
 
@@ -617,7 +702,7 @@ useEffect(() => {
                 </div>
 
 
-                {/* DISCOVER CARD */}
+                {/* ================= DISCOVER CARD ================= */}
 
                 <div className="rounded-3xl border border-blue-100 bg-blue-50/60 p-6">
 
@@ -651,7 +736,7 @@ useEffect(() => {
                 </div>
 
 
-                {/* NOTIFICATIONS */}
+                {/* ================= NOTIFICATIONS ================= */}
 
                 <div className="rounded-3xl border border-black/5 bg-white p-6">
 
@@ -699,7 +784,9 @@ useEffect(() => {
 }
 
 
-/* ================= SIDEBAR LINK ================= */
+/* =========================================================
+   SIDEBAR LINK
+========================================================= */
 
 function ReaderSidebarLink({
   href,
@@ -728,7 +815,9 @@ function ReaderSidebarLink({
 }
 
 
-/* ================= STAT CARD ================= */
+/* =========================================================
+   STAT CARD
+========================================================= */
 
 function ReaderStatCard({
   label,
@@ -740,7 +829,7 @@ function ReaderStatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white p-5">
+    <div className="rounded-2xl border border-black/5 bg-white p-5">
 
       <div className="flex items-center justify-between">
 

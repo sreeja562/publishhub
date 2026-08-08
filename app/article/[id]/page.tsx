@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
 import {
   ArrowLeft,
   Heart,
@@ -236,38 +237,38 @@ const articles = [
 export default function ArticlePage() {
   const params = useParams();
 
-  const id = Number(params.id);
+  const articleId = String(params.id);
 
   const article = articles.find(
-    (item) => item.id === id
+    (item) => item.id === Number(articleId)
   );
 
-const [liked, setLiked] = useState(false);
-const [bookmarked, setBookmarked] = useState(false);
-const [likes, setLikes] = useState(128);
+  const [liked, setLiked] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [likes, setLikes] = useState(128);
 
-const [comments, setComments] = useState<Comment[]>([]);
-const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState("");
 
-const [reviews, setReviews] = useState<Review[]>([]);
-const [reviewText, setReviewText] = useState("");
-const [reviewRating, setReviewRating] = useState(5);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
 
-useEffect(() => {
-  if (article) {
+  useEffect(() => {
+    if (!article) return;
+
     setBookmarked(isBookmarked(article.id));
     setLiked(isLiked(article.id));
     setLikes(getLikes(article.id));
     setComments(getComments(article.id));
     setReviews(getReviews(article.id));
-  }
-}, [article]);
+  }, [article]);
 
   if (!article) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">
+      <main className="min-h-screen bg-white">
+        <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-5 text-center">
+          <h1 className="text-4xl font-bold">
             Article Not Found
           </h1>
 
@@ -277,7 +278,7 @@ useEffect(() => {
 
           <Link
             href="/articles"
-            className="mt-5 inline-block rounded-full bg-black px-6 py-3 text-white"
+            className="mt-5 rounded-full bg-black px-6 py-3 text-white"
           >
             Back to Articles
           </Link>
@@ -287,70 +288,26 @@ useEffect(() => {
   }
 
   const handleLike = () => {
-  if (liked) {
-    const updatedLikes = removeLike(article.id);
+    if (liked) {
+      removeLike(article.id);
+      setLikes((current) => Math.max(0, current - 1));
+      setLiked(false);
+    } else {
+      addLike(article.id);
+      setLikes((current) => current + 1);
+      setLiked(true);
+    }
+  };
 
-    setLiked(false);
-    setLikes(updatedLikes);
-  } else {
-    const updatedLikes = addLike(article.id);
-
-    setLiked(true);
-    setLikes(updatedLikes);
-  }
-};
-  const handleAddComment = () => {
-  const text = commentText.trim();
-
-  if (!text || !article) {
-    return;
-  }
-
-  const newComment = addComment(
-    article.id,
-    "You",
-    text
-  );
-
-  setComments((current) => [
-    ...current,
-    newComment,
-  ]);
-
-  setCommentText("");
-};
-
-const handleRemoveComment = (commentId: string) => {
-  removeComment(commentId);
-
-  setComments((current) =>
-    current.filter(
-      (comment) => comment.id !== commentId
-    )
-  );
-};
- const handleAddReview = () => {
-  const text = reviewText.trim();
-
-  if (!text || !article) {
-    return;
-  }
-
-  const newReview = addReview(
-  article.id,
-  "You",
-  reviewRating,
-  text
-);
-
-  setReviews((current) => [
-    ...current,
-    newReview,
-  ]);
-
-  setReviewText("");
-  setReviewRating(5);
-};
+  const handleBookmark = () => {
+    if (bookmarked) {
+      removeBookmark(article.id);
+      setBookmarked(false);
+    } else {
+      addBookmark(article.id);
+      setBookmarked(true);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -364,64 +321,46 @@ const handleRemoveComment = (commentId: string) => {
     }
   };
 
+  const handleAddComment = () => {
+    if (!commentText.trim()) return;
+
+    addComment(article.id, commentText.trim());
+
+    setComments(getComments(article.id));
+    setCommentText("");
+  };
+
+  const handleRemoveComment = (commentId: string) => {
+    removeComment(commentId);
+
+    setComments((current) =>
+      current.filter(
+        (comment) => comment.id !== commentId
+      )
+    );
+  };
+
+  const handleAddReview = () => {
+    if (!reviewText.trim()) return;
+
+    addReview(
+      article.id,
+      reviewText.trim(),
+      reviewRating
+    );
+
+    setReviews(getReviews(article.id));
+    setReviewText("");
+    setReviewRating(5);
+  };
+
   return (
-    <main className="min-h-screen bg-[#f8f8f6] text-[#111111]">
+    <main className="min-h-screen bg-white text-black">
 
       {/* NAVBAR */}
 
-      <header className="sticky top-0 z-50 border-b border-black/10 bg-white/95 backdrop-blur">
+      
 
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-
-          <Link
-            href="/"
-            className="text-2xl font-bold"
-          >
-            Publish<span className="text-blue-600">Hub</span>
-          </Link>
-
-          <nav className="hidden items-center gap-8 text-sm md:flex">
-
-            <Link
-              href="/"
-              className="text-gray-500 hover:text-black"
-            >
-              Home
-            </Link>
-
-            <Link
-              href="/articles"
-              className="font-medium text-black"
-            >
-              Articles
-            </Link>
-
-            <Link
-              href="/authors"
-              className="text-gray-500 hover:text-black"
-            >
-              Authors
-            </Link>
-
-            <Link
-              href="/about"
-              className="text-gray-500 hover:text-black"
-            >
-              About
-            </Link>
-
-          </nav>
-
-          <Link
-            href="/login"
-            className="rounded-full border border-black/10 px-5 py-2 text-sm"
-          >
-            Login
-          </Link>
-
-        </div>
-
-      </header>
 
       {/* ARTICLE HEADER */}
 
@@ -431,15 +370,15 @@ const handleRemoveComment = (commentId: string) => {
 
           <Link
             href="/articles"
-            className="mb-8 flex w-fit items-center gap-2 text-sm text-gray-500 hover:text-black"
+            className="flex w-fit items-center gap-2 text-sm text-gray-400 transition hover:text-black"
           >
-            <ArrowLeft size={17} />
-            Back to Articles
+            <ArrowLeft size={16} />
+            All Articles
           </Link>
 
-          <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600">
+          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
             {article.category}
-          </span>
+          </p>
 
           <h1 className="mt-6 font-serif text-4xl font-semibold leading-tight md:text-6xl">
             {article.title}
@@ -448,6 +387,7 @@ const handleRemoveComment = (commentId: string) => {
           <p className="mt-6 text-lg leading-8 text-gray-500 md:text-xl">
             {article.description}
           </p>
+
 
           {/* AUTHOR */}
 
@@ -489,6 +429,7 @@ const handleRemoveComment = (commentId: string) => {
 
       </section>
 
+
       {/* FEATURED IMAGE */}
 
       <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
@@ -501,9 +442,10 @@ const handleRemoveComment = (commentId: string) => {
 
       </div>
 
+
       {/* ARTICLE CONTENT */}
 
-      <article className="mx-auto max-w-3xl px-5 pb-12 md:px-8">
+      <article className="mx-auto max-w-3xl px-5 pb-16 md:px-8">
 
         {article.content.map((section, index) => (
 
@@ -533,6 +475,7 @@ const handleRemoveComment = (commentId: string) => {
 
         ))}
 
+
         {/* ACTION BAR */}
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-y border-black/10 py-5">
@@ -540,6 +483,7 @@ const handleRemoveComment = (commentId: string) => {
           <div className="flex gap-3">
 
             <button
+              type="button"
               onClick={handleLike}
               className={`flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium ${
                 liked
@@ -551,7 +495,9 @@ const handleRemoveComment = (commentId: string) => {
               <Heart
                 size={18}
                 fill={
-                  liked ? "currentColor" : "none"
+                  liked
+                    ? "currentColor"
+                    : "none"
                 }
               />
 
@@ -559,7 +505,17 @@ const handleRemoveComment = (commentId: string) => {
 
             </button>
 
-            <button className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100">
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("comments")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100"
+            >
 
               <MessageCircle size={18} />
 
@@ -569,44 +525,32 @@ const handleRemoveComment = (commentId: string) => {
 
           </div>
 
+
           <div className="flex gap-3">
 
             <button
-  onClick={() => {
-    if (bookmarked) {
-      removeBookmark(article.id);
-      setBookmarked(false);
-    } else {
-      addBookmark({
-        id: article.id,
-        title: article.title,
-        description: article.description,
-        author: article.author,
-        username: article.username,
-        category: article.category,
-        date: article.date,
-        readTime: article.readTime,
-        image: article.image,
-        avatar: article.avatar,
-      });
+              type="button"
+              onClick={handleBookmark}
+              className={`rounded-full border p-2.5 ${
+                bookmarked
+                  ? "border-black bg-black text-white"
+                  : "border-black/10 text-gray-600 hover:bg-gray-100"
+              }`}
+            >
 
-      setBookmarked(true);
-    }
-  }}
-  aria-label={bookmarked ? "Remove bookmark" : "Bookmark article"}
-  className={`rounded-full border p-2.5 ${
-    bookmarked
-      ? "border-black bg-black text-white"
-      : "border-black/10 text-gray-600 hover:bg-gray-100"
-  }`}
->
-  <Bookmark
-    size={18}
-    fill={bookmarked ? "currentColor" : "none"}
-  />
-</button>
+              <Bookmark
+                size={18}
+                fill={
+                  bookmarked
+                    ? "currentColor"
+                    : "none"
+                }
+              />
+
+            </button>
 
             <button
+              type="button"
               onClick={handleShare}
               className="rounded-full border border-black/10 p-2.5 text-gray-600 hover:bg-gray-100"
             >
@@ -618,6 +562,7 @@ const handleRemoveComment = (commentId: string) => {
           </div>
 
         </div>
+
 
         {/* AUTHOR CARD */}
 
@@ -656,301 +601,333 @@ const handleRemoveComment = (commentId: string) => {
 
         </div>
 
-        {/* COMMENTS */}
 
         {/* COMMENTS */}
 
-<section className="mt-14">
-
-  <div className="flex items-center gap-2">
-
-    <MessageCircle size={21} />
-
-    <h2 className="text-2xl font-semibold">
-      Comments
-    </h2>
-
-    <span className="text-sm text-gray-400">
-      ({comments.length})
-    </span>
-
-  </div>
-
-
-  {/* COMMENT INPUT */}
-
-  <div className="mt-6 rounded-2xl border border-black/10 bg-white p-5">
-
-    <textarea
-      rows={4}
-      value={commentText}
-      onChange={(e) =>
-        setCommentText(e.target.value)
-      }
-      placeholder="Share your thoughts..."
-      className="w-full resize-none bg-transparent text-sm outline-none"
-    />
-
-    <div className="mt-3 flex justify-end">
-
-      <button
-        type="button"
-        onClick={handleAddComment}
-        disabled={!commentText.trim()}
-        className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Post Comment
-      </button>
-
-    </div>
-
-  </div>
-
-
-  {/* COMMENTS LIST */}
-
-  <div className="mt-6 space-y-4">
-
-    {comments.length === 0 ? (
-
-      <div className="rounded-2xl border border-black/5 bg-gray-50 p-6 text-center">
-
-        <MessageCircle
-          size={30}
-          className="mx-auto mb-3 text-gray-300"
-        />
-
-        <p className="text-sm font-medium text-gray-700">
-          No comments yet
-        </p>
-
-        <p className="mt-1 text-xs text-gray-400">
-          Be the first to share your thoughts.
-        </p>
-
-      </div>
-
-    ) : (
-
-      comments.map((comment) => (
-
-        <div
-          key={comment.id}
-          className="rounded-2xl border border-black/5 bg-white p-5"
+        <section
+          id="comments"
+          className="mt-14"
         >
 
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
 
-            <div className="flex items-center gap-3">
+            <MessageCircle size={21} />
 
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
-                {comment.author.charAt(0).toUpperCase()}
-              </div>
+            <h2 className="text-2xl font-semibold">
+              Comments
+            </h2>
 
-              <div>
-
-                <p className="text-sm font-semibold">
-                  {comment.author}
-                </p>
-
-                <p className="text-xs text-gray-400">
-                  {comment.date}
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <button
-              type="button"
-              onClick={() =>
-                handleRemoveComment(comment.id)
-              }
-              className="text-xs text-gray-400 transition hover:text-red-600"
-            >
-              Delete
-            </button>
+            <span className="text-sm text-gray-400">
+              ({comments.length})
+            </span>
 
           </div>
 
 
-          <p className="mt-4 text-sm leading-7 text-gray-600">
-            {comment.text}
-          </p>
+          {/* COMMENT INPUT */}
 
-        </div>
+          <div className="mt-5 rounded-2xl border border-black/10 p-5">
 
-      ))
+            <textarea
+              rows={4}
+              value={commentText}
+              onChange={(e) =>
+                setCommentText(e.target.value)
+              }
+              placeholder="Share your thoughts..."
+              className="w-full resize-none bg-transparent text-sm outline-none"
+            />
 
-    )}
-
-  </div>
-
-</section>
-         {/* REVIEWS */}
-
-<section className="mt-14">
-
-  <div className="flex items-center gap-2">
-
-    <h2 className="text-2xl font-semibold">
-      Reviews
-    </h2>
-
-    <span className="text-sm text-gray-400">
-      ({reviews.length})
-    </span>
-
-  </div>
-
-  {/* REVIEW FORM */}
-
-  <div className="mt-6 rounded-2xl border border-black/10 bg-white p-5">
-
-    <p className="text-sm font-medium text-gray-700">
-      Your Rating
-    </p>
-
-    <div className="mt-3 flex gap-1">
-
-      {[1, 2, 3, 4, 5].map((star) => (
-
-        <button
-          key={star}
-          type="button"
-          onClick={() => setReviewRating(star)}
-          className={`text-2xl transition ${
-            star <= reviewRating
-              ? "text-yellow-500"
-              : "text-gray-300"
-          }`}
-          aria-label={`Rate ${star} stars`}
-        >
-          ★
-        </button>
-
-      ))}
-
-    </div>
-
-    <textarea
-      rows={4}
-      value={reviewText}
-      onChange={(e) => setReviewText(e.target.value)}
-      placeholder="Write your review..."
-      className="mt-4 w-full resize-none rounded-xl border border-black/10 p-4 text-sm outline-none transition focus:border-blue-500"
-    />
-
-    <div className="mt-3 flex justify-end">
-
-      <button
-        type="button"
-        onClick={handleAddReview}
-        disabled={!reviewText.trim()}
-        className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Submit Review
-      </button>
-
-    </div>
-
-  </div>
-
-  {/* REVIEW LIST */}
-
-  <div className="mt-8 space-y-5">
-
-    {reviews.length === 0 ? (
-
-      <div className="rounded-2xl border border-black/5 bg-gray-50 p-8 text-center">
-
-        <p className="font-medium text-gray-700">
-          No reviews yet
-        </p>
-
-        <p className="mt-1 text-sm text-gray-400">
-          Be the first to review this article.
-        </p>
-
-      </div>
-
-    ) : (
-
-      reviews.map((review) => (
-
-        <div
-          key={review.id}
-          className="rounded-2xl border border-black/10 bg-white p-5"
-        >
-
-          <div className="flex items-start justify-between gap-4">
-
-            <div className="flex items-center gap-3">
-
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
-                {review.author.charAt(0)}
-              </div>
-
-              <div>
-
-                <p className="text-sm font-semibold text-gray-900">
-                  {review.author}
-                </p>
-
-                <p className="text-xs text-gray-400">
-                  {review.date}
-                </p>
-
-              </div>
-
-            </div>
-
-            {review.author === "You" && (
+            <div className="mt-3 flex justify-end">
 
               <button
                 type="button"
-                onClick={() => {
-                  removeReview(review.id);
-
-                  setReviews((current) =>
-                    current.filter(
-                      (item) => item.id !== review.id
-                    )
-                  );
-                }}
-                className="text-xs font-medium text-gray-400 transition hover:text-red-600"
+                onClick={handleAddComment}
+                disabled={!commentText.trim()}
+                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Delete
+                Post Comment
               </button>
+
+            </div>
+
+          </div>
+
+
+          {/* COMMENTS LIST */}
+
+          <div className="mt-5 space-y-4">
+
+            {comments.length === 0 ? (
+
+              <div className="rounded-2xl border border-black/5 bg-gray-50 p-6 text-center">
+
+                <MessageCircle
+                  size={30}
+                  className="mx-auto mb-3 text-gray-300"
+                />
+
+                <p className="text-sm font-medium text-gray-700">
+                  No comments yet
+                </p>
+
+                <p className="mt-1 text-xs text-gray-400">
+                  Be the first to share your thoughts.
+                </p>
+
+              </div>
+
+            ) : (
+
+              comments.map((comment) => (
+
+                <div
+                  key={comment.id}
+                  className="rounded-2xl border border-black/5 bg-white p-5"
+                >
+
+                  <div className="flex items-start justify-between gap-4">
+
+                    <div className="flex items-center gap-3">
+
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
+                        {comment.author
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
+
+                      <div>
+
+                        <p className="text-sm font-semibold">
+                          {comment.author}
+                        </p>
+
+                        <p className="text-xs text-gray-400">
+                          {comment.date}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleRemoveComment(
+                          comment.id
+                        )
+                      }
+                      className="text-xs text-gray-400 transition hover:text-red-600"
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+
+                  <p className="mt-4 text-sm leading-7 text-gray-600">
+                    {comment.text}
+                  </p>
+
+                </div>
+
+              ))
 
             )}
 
           </div>
 
-          <div className="mt-3 flex gap-1 text-lg text-yellow-500">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span key={star}>
-                {star <= review.rating ? "★" : "☆"}
-              </span>
-            ))}
+        </section>
+
+
+        {/* REVIEWS */}
+
+        <section className="mt-14 border-t border-black/10 pt-10">
+
+          <div className="flex items-center gap-3">
+
+            <h2 className="text-2xl font-semibold">
+              Reviews
+            </h2>
+
+            <span className="text-sm text-gray-400">
+              ({reviews.length})
+            </span>
+
           </div>
 
-          <p className="mt-3 text-sm leading-7 text-gray-700">
-            {review.text}
-          </p>
 
-        </div>
+          {/* REVIEW FORM */}
 
-      ))
+          <div className="mt-5 rounded-2xl border border-black/10 p-5">
 
-    )}
+            <p className="text-sm font-medium text-gray-700">
+              Your Rating
+            </p>
 
-  </div>
+            <div className="mt-3 flex gap-1">
 
-</section>
+              {[1, 2, 3, 4, 5].map((star) => (
+
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() =>
+                    setReviewRating(star)
+                  }
+                  className={`text-2xl transition ${
+                    star <= reviewRating
+                      ? "text-yellow-500"
+                      : "text-gray-300"
+                  }`}
+                  aria-label={`Rate ${star} stars`}
+                >
+                  ★
+                </button>
+
+              ))}
+
+            </div>
+
+            <textarea
+              rows={4}
+              value={reviewText}
+              onChange={(e) =>
+                setReviewText(e.target.value)
+              }
+              placeholder="Write your review..."
+              className="mt-4 w-full resize-none rounded-xl border border-black/10 p-4 text-sm outline-none transition focus:border-blue-500"
+            />
+
+            <div className="mt-3 flex justify-end">
+
+              <button
+                type="button"
+                onClick={handleAddReview}
+                disabled={!reviewText.trim()}
+                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Submit Review
+              </button>
+
+            </div>
+
+          </div>
+
+
+          {/* REVIEW LIST */}
+
+          <div className="mt-5 space-y-4">
+
+            {reviews.length === 0 ? (
+
+              <div className="rounded-2xl border border-black/5 bg-gray-50 p-8 text-center">
+
+                <p className="font-medium text-gray-700">
+                  No reviews yet
+                </p>
+
+                <p className="mt-1 text-sm text-gray-400">
+                  Be the first to review this article.
+                </p>
+
+              </div>
+
+            ) : (
+
+              reviews.map((review) => (
+
+                <div
+                  key={review.id}
+                  className="rounded-2xl border border-black/10 bg-white p-5"
+                >
+
+                  <div className="flex items-start justify-between gap-4">
+
+                    <div className="flex items-center gap-3">
+
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                        {review.author.charAt(0)}
+                      </div>
+
+                      <div>
+
+                        <p className="text-sm font-semibold text-gray-900">
+                          {review.author}
+                        </p>
+
+                        <p className="text-xs text-gray-400">
+                          {review.date}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    {review.author === "You" && (
+
+                      <button
+                        type="button"
+                        onClick={() => {
+
+                          removeReview(
+                            review.id
+                          );
+
+                          setReviews((current) =>
+                            current.filter(
+                              (item) =>
+                                item.id !==
+                                review.id
+                            )
+                          );
+
+                        }}
+                        className="text-xs font-medium text-gray-400 transition hover:text-red-600"
+                      >
+                        Delete
+                      </button>
+
+                    )}
+
+                  </div>
+
+
+                  <div className="mt-3 flex gap-1 text-lg text-yellow-500">
+
+                    {[1, 2, 3, 4, 5].map(
+                      (star) => (
+
+                        <span key={star}>
+                          {star <= review.rating
+                            ? "★"
+                            : "☆"}
+                        </span>
+
+                      )
+                    )}
+
+                  </div>
+
+
+                  <p className="mt-3 text-sm leading-7 text-gray-700">
+                    {review.text}
+                  </p>
+
+                </div>
+
+              ))
+
+            )}
+
+          </div>
+
+        </section>
 
       </article>
+
 
       {/* FOOTER */}
 

@@ -1,206 +1,196 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, EyeOff, ArrowLeft, Mail, Lock } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+const demoUsers = [
+  {
+    email: "reader@publishhub.com",
+    password: "Reader@123",
+    name: "Demo Reader",
+    role: "reader",
+  },
+  {
+    email: "author@publishhub.com",
+    password: "Author@123",
+    name: "Demo Author",
+    role: "author",
+  },
+  {
+    email: "creator@publishhub.com",
+    password: "Creator@123",
+    name: "Demo Creator",
+    role: "reader-author",
+  },
+];
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setError("");
+
+    const user = demoUsers.find(
+      (demoUser) =>
+        demoUser.email === email.trim() &&
+        demoUser.password === password
+    );
+
+    if (!user) {
+      setError("Invalid email or password.");
+      return;
+    }
+
+    localStorage.setItem(
+      "publishhubUser",
+      JSON.stringify({
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      })
+    );
+   if (user.role === "reader") {
+  router.push("/reader");
+} else if (user.role === "author" || user.role === "reader-author") {
+  router.push("/dashboard");
+} else {
+  router.push("/");
+}
+  }
 
   return (
-    <main className="min-h-screen bg-[#f8f8f6] text-[#111111]">
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
 
-      {/* HEADER */}
-
-
-      {/* LOGIN AREA */}
-
-      <section className="flex min-h-[calc(100vh-73px)] items-center justify-center px-5 py-12">
-
-        <div className="w-full max-w-md">
-
-          {/* TITLE */}
-
-          <div className="text-center">
-
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600">
-              Welcome Back
-            </p>
-
-            <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight">
-              Sign in to PublishHub
-            </h1>
-
-            <p className="mt-3 text-sm leading-6 text-gray-500">
-              Sign in to manage your articles and continue writing.
-            </p>
-
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-black text-white text-2xl">
+            📖
           </div>
 
+          <h1 className="mt-5 text-3xl font-bold text-gray-900">
+            Welcome back
+          </h1>
 
-          {/* LOGIN CARD */}
+          <p className="mt-2 text-gray-500">
+            Login to your PublishHub account
+          </p>
+        </div>
 
-          <div className="mt-8 rounded-3xl border border-black/5 bg-white p-6 shadow-sm md:p-8">
+        {/* Login Card */}
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
 
-            <form className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-5">
 
-              {/* EMAIL */}
+            {/* Email */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Email
+              </label>
 
-              <div>
-
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-sm font-medium"
-                >
-                  Email address
-                </label>
-
-                <div className="relative">
-
-                  <Mail
-                    size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
-
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    className="w-full rounded-xl border border-black/10 bg-[#f8f8f6] py-3 pl-11 pr-4 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
-                  />
-
-                </div>
-
-              </div>
-
-
-              {/* PASSWORD */}
-
-              <div>
-
-                <div className="mb-2 flex items-center justify-between">
-
-                  <label
-                    htmlFor="password"
-                    className="text-sm font-medium"
-                  >
-                    Password
-                  </label>
-
-                  <button
-                    type="button"
-                    className="text-xs font-medium text-blue-600 hover:underline"
-                  >
-                    Forgot password?
-                  </button>
-
-                </div>
-
-
-                <div className="relative">
-
-                  <Lock
-                    size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
-
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className="w-full rounded-xl border border-black/10 bg-[#f8f8f6] py-3 pl-11 pr-12 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
-                  />
-
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowPassword(!showPassword)
-                    }
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-black"
-                    aria-label="Toggle password visibility"
-                  >
-                    {showPassword ? (
-                      <EyeOff size={18} />
-                    ) : (
-                      <Eye size={18} />
-                    )}
-                  </button>
-
-                </div>
-
-              </div>
-
-
-              {/* REMEMBER ME */}
-
-              <div className="flex items-center gap-2">
-
-                <input
-                  id="remember"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-
-                <label
-                  htmlFor="remember"
-                  className="text-sm text-gray-500"
-                >
-                  Remember me
-                </label>
-
-              </div>
-
-
-              {/* LOGIN BUTTON */}
-
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-black py-3.5 text-sm font-semibold text-white transition hover:bg-blue-600"
-              >
-                Sign In
-              </button>
-
-            </form>
-
-
-            {/* REGISTER */}
-
-            <div className="mt-7 border-t border-black/5 pt-6 text-center">
-
-              <p className="text-sm text-gray-500">
-
-                Don't have an author account?{" "}
-
-                <Link
-                  href="/register"
-                  className="font-semibold text-blue-600 hover:underline"
-                >
-                  Create account
-                </Link>
-
-              </p>
-
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-[#7C3AED] focus:ring-2 focus:ring-[#7C3AED]/20"
+              />
             </div>
 
-          </div>
+            {/* Password */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Password
+              </label>
 
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-[#7C3AED] focus:ring-2 focus:ring-[#7C3AED]/20"
+              />
+            </div>
 
-          {/* AUTHOR NOTE */}
+            {/* Error */}
+            {error && (
+              <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
 
-          <div className="mt-6 text-center">
+            {/* Login Button */}
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-[#7C3AED] py-3 font-semibold text-white transition hover:bg-[#6D28D9]"
+            >
+              Login
+            </button>
 
-            <p className="text-xs leading-5 text-gray-400">
-              Only registered authors can create and submit
-              articles on PublishHub.
-            </p>
+          </form>
 
+          {/* Demo Credentials */}
+          <div className="mt-8 rounded-xl bg-gray-50 p-4">
+
+            <h3 className="font-semibold text-gray-900">
+              Demo Credentials
+            </h3>
+
+            <div className="mt-3 space-y-4 text-sm text-gray-600">
+
+              {/* Reader */}
+              <div>
+                <p className="font-medium text-gray-800">
+                  Reader
+                </p>
+                <p>reader@publishhub.com</p>
+                <p>Reader@123</p>
+              </div>
+
+              {/* Author */}
+              <div>
+                <p className="font-medium text-gray-800">
+                  Author
+                </p>
+                <p>author@publishhub.com</p>
+                <p>Author@123</p>
+              </div>
+
+              {/* Reader + Author */}
+              <div>
+                <p className="font-medium text-gray-800">
+                  Reader + Author
+                </p>
+                <p>creator@publishhub.com</p>
+                <p>Creator@123</p>
+              </div>
+
+            </div>
           </div>
 
         </div>
 
-      </section>
+        {/* Register */}
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Don't have an account?{" "}
+          <Link
+            href="/register"
+            className="font-semibold text-[#7C3AED] hover:text-[#6D28D9]"
+          >
+            Sign up
+          </Link>
+        </p>
 
+      </div>
     </main>
   );
 }

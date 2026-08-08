@@ -109,11 +109,14 @@ export default function EditArticlePage() {
 
   if (!article) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f8f8f6]">
-
+      <main className="flex min-h-screen items-center justify-center bg-[#f8f8f6] px-6">
         <div className="text-center">
 
-          <h1 className="text-3xl font-bold">
+          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-600">
+            404
+          </p>
+
+          <h1 className="mt-3 text-3xl font-bold">
             Article Not Found
           </h1>
 
@@ -121,15 +124,19 @@ export default function EditArticlePage() {
             The article you are trying to edit does not exist.
           </p>
 
+          <p className="mt-2 text-sm text-gray-400">
+            Article ID: {id}
+          </p>
+
           <Link
             href="/dashboard/articles"
-            className="mt-6 inline-flex rounded-full bg-black px-6 py-3 text-sm font-medium text-white"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
           >
+            <ArrowLeft size={16} />
             Back to My Articles
           </Link>
 
         </div>
-
       </main>
     );
   }
@@ -143,7 +150,7 @@ export default function EditArticlePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f8f8f6] text-[#111111]">
+    <main className="min-h-screen bg-[#f8f8f6]">
 
       {/* HEADER */}
 
@@ -155,14 +162,15 @@ export default function EditArticlePage() {
             href="/"
             className="text-2xl font-bold"
           >
-            Publish<span className="text-blue-600">
+            Publish
+            <span className="text-blue-600">
               Hub
             </span>
           </Link>
 
           <Link
             href="/dashboard/articles"
-            className="text-sm text-gray-500 hover:text-black"
+            className="text-sm text-gray-500 transition hover:text-black"
           >
             My Articles
           </Link>
@@ -170,6 +178,7 @@ export default function EditArticlePage() {
         </div>
 
       </header>
+
 
       {/* PAGE */}
 
@@ -183,7 +192,7 @@ export default function EditArticlePage() {
 
             <Link
               href="/dashboard/articles"
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-black"
+              className="flex w-fit items-center gap-2 text-sm text-gray-500 transition hover:text-black"
             >
               <ArrowLeft size={16} />
               Back to My Articles
@@ -199,11 +208,16 @@ export default function EditArticlePage() {
 
           </div>
 
+
+          {/* TOP ACTIONS */}
+
           <div className="flex gap-3">
 
+            {/* IMPORTANT: /articles/${id} */}
+
             <Link
-              href={`/article/${id}`}
-              className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-medium hover:bg-gray-100"
+              href={`/articles/${id}`}
+              className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-medium transition hover:bg-gray-100"
             >
               <Eye size={17} />
               Preview
@@ -212,19 +226,24 @@ export default function EditArticlePage() {
             <button
               type="button"
               onClick={handleSave}
-              className="flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white hover:bg-blue-600"
+              className="flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
             >
               <Save size={17} />
-              {saved ? "Saved!" : "Save Changes"}
+
+              {saved
+                ? "Saved!"
+                : "Save Changes"}
             </button>
 
           </div>
 
         </div>
 
+
         {/* FORM */}
 
         <div className="mt-8 space-y-6">
+
 
           {/* TITLE */}
 
@@ -239,11 +258,12 @@ export default function EditArticlePage() {
               onChange={(e) =>
                 setTitle(e.target.value)
               }
-              className="mt-3 w-full rounded-xl border border-black/10 px-4 py-3 text-lg outline-none focus:border-blue-500"
+              className="mt-3 w-full rounded-xl border border-black/10 px-4 py-3 text-lg outline-none transition focus:border-blue-500"
               placeholder="Enter article title"
             />
 
           </section>
+
 
           {/* CATEGORY */}
 
@@ -258,8 +278,9 @@ export default function EditArticlePage() {
               onChange={(e) =>
                 setCategory(e.target.value)
               }
-              className="mt-3 w-full rounded-xl border border-black/10 bg-white px-4 py-3 outline-none focus:border-blue-500"
+              className="mt-3 w-full rounded-xl border border-black/10 bg-white px-4 py-3 outline-none transition focus:border-blue-500"
             >
+
               <option value="Technology">
                 Technology
               </option>
@@ -283,9 +304,11 @@ export default function EditArticlePage() {
               <option value="Education">
                 Education
               </option>
+
             </select>
 
           </section>
+
 
           {/* DESCRIPTION */}
 
@@ -301,11 +324,12 @@ export default function EditArticlePage() {
                 setDescription(e.target.value)
               }
               rows={3}
-              className="mt-3 w-full resize-none rounded-xl border border-black/10 px-4 py-3 text-sm leading-6 outline-none focus:border-blue-500"
+              className="mt-3 w-full resize-none rounded-xl border border-black/10 px-4 py-3 text-sm leading-6 outline-none transition focus:border-blue-500"
               placeholder="Write a short description..."
             />
 
           </section>
+
 
           {/* IMAGE */}
 
@@ -326,7 +350,7 @@ export default function EditArticlePage() {
               onChange={(e) =>
                 setImage(e.target.value)
               }
-              className="mt-3 w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none focus:border-blue-500"
+              className="mt-3 w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
               placeholder="https://..."
             />
 
@@ -339,6 +363,7 @@ export default function EditArticlePage() {
             )}
 
           </section>
+
 
           {/* CONTENT */}
 
@@ -354,7 +379,7 @@ export default function EditArticlePage() {
                 setContent(e.target.value)
               }
               rows={18}
-              className="mt-3 w-full resize-y rounded-xl border border-black/10 px-4 py-4 text-base leading-8 outline-none focus:border-blue-500"
+              className="mt-3 w-full resize-y rounded-xl border border-black/10 px-4 py-4 text-base leading-8 outline-none transition focus:border-blue-500"
               placeholder="Write your article..."
             />
 
@@ -364,13 +389,14 @@ export default function EditArticlePage() {
 
           </section>
 
+
           {/* SAVE */}
 
           <div className="flex justify-end gap-3 pb-10">
 
             <Link
               href="/dashboard/articles"
-              className="rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-medium hover:bg-gray-100"
+              className="rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-medium transition hover:bg-gray-100"
             >
               Cancel
             </Link>
@@ -378,10 +404,15 @@ export default function EditArticlePage() {
             <button
               type="button"
               onClick={handleSave}
-              className="flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-medium text-white hover:bg-blue-600"
+              className="flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
             >
+
               <Save size={17} />
-              {saved ? "Changes Saved!" : "Save Changes"}
+
+              {saved
+                ? "Changes Saved!"
+                : "Save Changes"}
+
             </button>
 
           </div>
