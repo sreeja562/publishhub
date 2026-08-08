@@ -1,107 +1,103 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
-  FileCheck,
   FileText,
   Users,
-  Settings,
+  ClipboardCheck,
   LogOut,
 } from "lucide-react";
 
-const menuItems = [
-  {
-    name: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Article Review",
-    href: "/admin/review",
-    icon: FileCheck,
-  },
-  {
-    name: "Published Articles",
-    href: "/admin/articles",
-    icon: FileText,
-  },
-  {
-    name: "Authors",
-    href: "/admin/authors",
-    icon: Users,
-  },
-];
-
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const menuItems = [
+    {
+      name: "Dashboard",
+      href: "/admin",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Articles",
+      href: "/admin/articles",
+      icon: FileText,
+    },
+    {
+      name: "Authors",
+      href: "/admin/authors",
+      icon: Users,
+    },
+    {
+      name: "Review",
+      href: "/admin/review",
+      icon: ClipboardCheck,
+    },
+  ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("publishhubUser");
+    localStorage.removeItem("publishhubAdmin");
+
+    router.push("/");
+  };
 
   return (
-    <aside className="flex min-h-screen w-64 flex-col border-r bg-white">
-
-      {/* Logo */}
-      <div className="border-b px-6 py-6">
-        <Link href="/admin">
-          <h1 className="text-xl font-bold text-gray-900">
-            Publication
-          </h1>
-
-          <p className="mt-1 text-xs text-gray-500">
+    <aside className="w-56 shrink-0 bg-white border-r border-gray-200 flex flex-col">
+      {/* Sidebar Content */}
+      <div className="p-4">
+        {/* Title */}
+        <div className="px-3 mb-6">
+          <h2 className="text-sm font-semibold text-gray-900">
             Admin Panel
+          </h2>
+
+          <p className="text-xs text-gray-400 mt-1">
+            Manage PublishHub
           </p>
-        </Link>
+        </div>
+
+        {/* Navigation */}
+        <nav className="space-y-1.5">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+
+            const active =
+              item.href === "/admin"
+                ? pathname === "/admin"
+                : pathname.startsWith(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+                  active
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon size={17} strokeWidth={1.8} />
+
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
-
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-
-          const active =
-            pathname === item.href;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
-                active
-                  ? "bg-black text-white"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-              }`}
-            >
-              <Icon size={19} />
-
-              {item.name}
-            </Link>
-          );
-        })}
-
-      </nav>
-
-      {/* Bottom */}
-      <div className="border-t p-4">
-
-        <Link
-          href="/dashboard/settings"
-          className="mb-2 flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-100"
-        >
-          <Settings size={19} />
-          Settings
-        </Link>
-
+      {/* Logout */}
+      <div className="mt-auto p-4 border-t border-gray-100">
         <button
-          onClick={() => {
-            alert("Logout will be connected to authentication later.");
-          }}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50"
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 transition"
         >
-          <LogOut size={19} />
-          Logout
-        </button>
+          <LogOut size={17} strokeWidth={1.8} />
 
+          <span>Logout</span>
+        </button>
       </div>
     </aside>
   );

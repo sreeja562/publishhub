@@ -1,164 +1,182 @@
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
 import { articles } from "@/data/articles";
 
-export default async function ArticlePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  // Next.js 16 requires params to be awaited
-  const { id } = await params;
-
-  // Find article by ID
-  const article = articles.find(
-    (item) => String(item.id) === id
-  );
-
-  // Show 404 if article doesn't exist
-  if (!article) {
-    notFound();
-  }
-
+export default function ArticlesPage() {
   return (
     <main className="min-h-screen bg-white">
 
-      {/* ==============================
-          ARTICLE HEADER
-      ============================== */}
-      <section className="border-b border-gray-100">
+      {/* ================= NAVBAR ================= */}
+      
 
-        <div className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+      {/* ================= PAGE HEADER ================= */}
+      <section className="border-b border-black/5 bg-[#fafaf8]">
 
-          <Link
-            href="/articles"
-            className="inline-flex items-center text-sm font-semibold text-[#7C3AED] hover:text-[#6D28D9]"
-          >
-            ← Back to Articles
-          </Link>
+        <div className="mx-auto max-w-7xl px-5 py-14 md:px-8 md:py-20">
 
-          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.15em] text-[#7C3AED]">
-            {article.category}
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">
+            PublishHub
           </p>
 
-          <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-gray-950 md:text-5xl lg:text-6xl">
-            {article.title}
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
+            All Articles
           </h1>
 
-          <div className="mt-7 flex items-center gap-3">
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#7C3AED] text-sm font-bold text-white">
-              {article.author.charAt(0).toUpperCase()}
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold text-gray-900">
-                {article.author}
-              </p>
-
-              <p className="text-sm text-gray-500">
-                PublishHub Author
-              </p>
-            </div>
-
-          </div>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-gray-500 md:text-lg">
+            Explore ideas, tutorials, insights and stories from
+            the PublishHub community.
+          </p>
 
         </div>
 
       </section>
 
 
-      {/* ==============================
-          ARTICLE
-      ============================== */}
-      <article className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+      {/* ================= ARTICLES ================= */}
+      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
 
-        {/* Article Image */}
-        <div className="relative h-[280px] w-full overflow-hidden rounded-2xl bg-gray-100 md:h-[450px]">
+        {articles.length === 0 ? (
 
-          <Image
-            src={article.image}
-            alt={article.title}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 896px"
-            className="object-cover"
-          />
+          /* Empty state */
+          <div className="rounded-2xl border border-black/5 bg-[#fafaf8] px-6 py-16 text-center">
 
-        </div>
+            <h2 className="text-2xl font-semibold text-gray-900">
+              No articles yet
+            </h2>
 
+            <p className="mt-3 text-gray-500">
+              There are no published articles to display.
+            </p>
 
-        {/* Article Body */}
-        <div className="mx-auto mt-12 max-w-3xl">
+          </div>
 
-          <p className="text-lg leading-8 text-gray-600 md:text-xl">
-            Welcome to this article on PublishHub. This publication
-            contains ideas, insights, and useful information shared
-            by our community of authors.
-          </p>
+        ) : (
 
-          <p className="mt-7 text-lg leading-8 text-gray-600">
-            PublishHub is a platform where writers can share their
-            knowledge, tutorials, experiences, and perspectives
-            with readers.
-          </p>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 
-          <h2 className="mt-12 text-2xl font-bold text-gray-950">
-            About this article
-          </h2>
+            {articles.map((article) => (
 
-          <p className="mt-5 text-lg leading-8 text-gray-600">
-            This is currently sample article content for the frontend
-            version of PublishHub. Later, when the backend and database
-            are connected, the complete article content can be loaded
-            dynamically from the database.
-          </p>
+              <article
+                key={article.id}
+                className="group overflow-hidden rounded-2xl border border-black/5 bg-white transition hover:-translate-y-1 hover:shadow-lg"
+              >
 
-          <p className="mt-7 text-lg leading-8 text-gray-600">
-            Authors will be able to create articles, save drafts,
-            publish their work, and share their knowledge with the
-            PublishHub community.
-          </p>
+                {/* Image */}
+                <Link href={`/article/${article.id}`}>
 
-          <h2 className="mt-12 text-2xl font-bold text-gray-950">
-            Keep exploring
-          </h2>
+                  <div className="relative h-56 w-full overflow-hidden bg-gray-100">
 
-          <p className="mt-5 text-lg leading-8 text-gray-600">
-            Continue exploring PublishHub to discover more articles,
-            topics, and authors.
-          </p>
+                    <Image
+                      src={article.image}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                    />
 
-        </div>
+                  </div>
 
-      </article>
+                </Link>
 
 
-      {/* ==============================
-          BOTTOM CTA
-      ============================== */}
-      <section className="border-t border-gray-100 bg-gray-50">
+                {/* Content */}
+                <div className="p-6">
 
-        <div className="mx-auto max-w-4xl px-6 py-10">
+                  {/* Category */}
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
+                    {article.category}
+                  </p>
 
-          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+
+                  {/* Title */}
+                  <Link href={`/article/${article.id}`}>
+
+                    <h2 className="mt-3 text-xl font-bold leading-7 text-gray-950 transition group-hover:text-blue-600">
+                      {article.title}
+                    </h2>
+
+                  </Link>
+
+
+                  {/* Description */}
+                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-gray-500">
+  Explore this article and discover ideas, insights, and useful information from the PublishHub community.
+</p>
+
+
+                  {/* Author */}
+                  <div className="mt-6 flex items-center justify-between border-t border-black/5 pt-5">
+
+                    <div className="flex items-center gap-3">
+
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                        {article.author
+                          ? article.author.charAt(0).toUpperCase()
+                          : "A"}
+                      </div>
+
+                      <div>
+
+                        <p className="text-sm font-semibold text-gray-900">
+                          {article.author}
+                        </p>
+
+                        <p className="text-xs text-gray-400">
+                          PublishHub Author
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    {/* Read */}
+                    <Link
+                      href={`/article/${article.id}`}
+                      className="text-sm font-semibold text-gray-600 transition hover:text-blue-600"
+                    >
+                      Read →
+                    </Link>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </section>
+
+
+      {/* ================= CTA ================= */}
+      <section className="border-t border-black/5 bg-[#f8f8f6]">
+
+        <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
 
             <div>
+
               <p className="text-sm text-gray-500">
-                Want to read more?
+                Want to contribute?
               </p>
 
-              <p className="mt-1 font-semibold text-gray-900">
-                Explore more PublishHub articles
-              </p>
+              <h2 className="mt-1 text-xl font-semibold text-gray-950">
+                Share your ideas with PublishHub
+              </h2>
+
             </div>
 
             <Link
-              href="/articles"
-              className="rounded-lg bg-[#7C3AED] px-6 py-3 text-center font-semibold text-white transition hover:bg-[#6D28D9]"
+              href="/login"
+              className="w-fit rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
             >
-              Browse Articles
+              Start Writing
             </Link>
 
           </div>
@@ -166,6 +184,18 @@ export default async function ArticlePage({
         </div>
 
       </section>
+
+
+      {/* ================= FOOTER ================= */}
+      <footer className="border-t border-black/5 bg-white">
+
+        <div className="mx-auto max-w-7xl px-5 py-8 text-sm text-gray-400 md:px-8">
+
+          © 2026 PublishHub
+
+        </div>
+
+      </footer>
 
     </main>
   );

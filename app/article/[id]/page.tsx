@@ -332,13 +332,12 @@ export default function ArticlePage() {
         <div className="mx-auto max-w-4xl px-5 pb-10 pt-12 md:pt-16">
 
           <Link
-            href="/articles"
-            className="mb-8 flex w-fit items-center gap-2 text-sm text-gray-500 hover:text-black"
-          >
-            <ArrowLeft size={17} />
-            Back to Articles
-          </Link>
-
+  href="/articles"
+  className="flex w-fit items-center gap-2 text-sm text-gray-400 transition hover:text-black"
+>
+  <ArrowLeft size={16} />
+  All Articles
+</Link>
           <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600">
             {article.category}
           </span>
