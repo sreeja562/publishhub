@@ -25,6 +25,13 @@ import {
 } from "@/lib/comments";
 
 import {
+  getReviews,
+  addReview,
+  removeReview,
+  type Review,
+} from "@/lib/reviews";
+
+import {
   getLikes,
   addLike,
   removeLike,
@@ -242,13 +249,17 @@ const [likes, setLikes] = useState(128);
 const [comments, setComments] = useState<Comment[]>([]);
 const [commentText, setCommentText] = useState("");
 
+const [reviews, setReviews] = useState<Review[]>([]);
+const [reviewText, setReviewText] = useState("");
+const [reviewRating, setReviewRating] = useState(5);
+
 useEffect(() => {
   if (article) {
     setBookmarked(isBookmarked(article.id));
     setLiked(isLiked(article.id));
     setLikes(getLikes(article.id));
-
     setComments(getComments(article.id));
+    setReviews(getReviews(article.id));
   }
 }, [article]);
 
@@ -318,7 +329,28 @@ const handleRemoveComment = (commentId: string) => {
     )
   );
 };
+ const handleAddReview = () => {
+  const text = reviewText.trim();
 
+  if (!text || !article) {
+    return;
+  }
+
+  const newReview = addReview(
+  article.id,
+  "You",
+  reviewRating,
+  text
+);
+
+  setReviews((current) => [
+    ...current,
+    newReview,
+  ]);
+
+  setReviewText("");
+  setReviewRating(5);
+};
 
   const handleShare = async () => {
     try {
@@ -745,6 +777,167 @@ const handleRemoveComment = (commentId: string) => {
 
           <p className="mt-4 text-sm leading-7 text-gray-600">
             {comment.text}
+          </p>
+
+        </div>
+
+      ))
+
+    )}
+
+  </div>
+
+</section>
+         {/* REVIEWS */}
+
+<section className="mt-14">
+
+  <div className="flex items-center gap-2">
+
+    <h2 className="text-2xl font-semibold">
+      Reviews
+    </h2>
+
+    <span className="text-sm text-gray-400">
+      ({reviews.length})
+    </span>
+
+  </div>
+
+  {/* REVIEW FORM */}
+
+  <div className="mt-6 rounded-2xl border border-black/10 bg-white p-5">
+
+    <p className="text-sm font-medium text-gray-700">
+      Your Rating
+    </p>
+
+    <div className="mt-3 flex gap-1">
+
+      {[1, 2, 3, 4, 5].map((star) => (
+
+        <button
+          key={star}
+          type="button"
+          onClick={() => setReviewRating(star)}
+          className={`text-2xl transition ${
+            star <= reviewRating
+              ? "text-yellow-500"
+              : "text-gray-300"
+          }`}
+          aria-label={`Rate ${star} stars`}
+        >
+          ★
+        </button>
+
+      ))}
+
+    </div>
+
+    <textarea
+      rows={4}
+      value={reviewText}
+      onChange={(e) => setReviewText(e.target.value)}
+      placeholder="Write your review..."
+      className="mt-4 w-full resize-none rounded-xl border border-black/10 p-4 text-sm outline-none transition focus:border-blue-500"
+    />
+
+    <div className="mt-3 flex justify-end">
+
+      <button
+        type="button"
+        onClick={handleAddReview}
+        disabled={!reviewText.trim()}
+        className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Submit Review
+      </button>
+
+    </div>
+
+  </div>
+
+  {/* REVIEW LIST */}
+
+  <div className="mt-8 space-y-5">
+
+    {reviews.length === 0 ? (
+
+      <div className="rounded-2xl border border-black/5 bg-gray-50 p-8 text-center">
+
+        <p className="font-medium text-gray-700">
+          No reviews yet
+        </p>
+
+        <p className="mt-1 text-sm text-gray-400">
+          Be the first to review this article.
+        </p>
+
+      </div>
+
+    ) : (
+
+      reviews.map((review) => (
+
+        <div
+          key={review.id}
+          className="rounded-2xl border border-black/10 bg-white p-5"
+        >
+
+          <div className="flex items-start justify-between gap-4">
+
+            <div className="flex items-center gap-3">
+
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                {review.author.charAt(0)}
+              </div>
+
+              <div>
+
+                <p className="text-sm font-semibold text-gray-900">
+                  {review.author}
+                </p>
+
+                <p className="text-xs text-gray-400">
+                  {review.date}
+                </p>
+
+              </div>
+
+            </div>
+
+            {review.author === "You" && (
+
+              <button
+                type="button"
+                onClick={() => {
+                  removeReview(review.id);
+
+                  setReviews((current) =>
+                    current.filter(
+                      (item) => item.id !== review.id
+                    )
+                  );
+                }}
+                className="text-xs font-medium text-gray-400 transition hover:text-red-600"
+              >
+                Delete
+              </button>
+
+            )}
+
+          </div>
+
+          <div className="mt-3 flex gap-1 text-lg text-yellow-500">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span key={star}>
+                {star <= review.rating ? "★" : "☆"}
+              </span>
+            ))}
+          </div>
+
+          <p className="mt-3 text-sm leading-7 text-gray-700">
+            {review.text}
           </p>
 
         </div>
