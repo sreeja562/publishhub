@@ -5,6 +5,8 @@ import {
   LayoutDashboard,
   FileText,
   PenLine,
+  BookOpen,
+  UserRound,
   Users,
   Settings,
   LogOut,
@@ -13,7 +15,6 @@ import {
   Heart,
   MessageCircle,
   Clock,
-  CheckCircle2,
   Edit3,
   MoreHorizontal,
 } from "lucide-react";
@@ -77,7 +78,7 @@ export default function DashboardPage() {
             >
               View Website
             </Link>
-
+            
 
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
               S
@@ -149,6 +150,12 @@ export default function DashboardPage() {
                 href="/dashboard/write"
                 icon={<PenLine size={18} />}
                 label="Write Article"
+              />
+       
+              <SidebarLink
+                href="/dashboard/messages"
+                icon={<MessageCircle size={18} />}
+                label="Messages"
               />
 
               <SidebarLink
