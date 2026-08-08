@@ -141,12 +141,12 @@ export default function BookmarksPage() {
                     </p>
                   </div>
 
-                  <Link
-                    href={`/article/${article.id}`}
-                    className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
-                  >
-                    Read Article
-                  </Link>
+                 <Link
+  href={`/articles/${article.id}`}
+  className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+>
+  Read Article
+</Link>
                 </div>
               </div>
             </article>

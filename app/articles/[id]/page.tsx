@@ -10,8 +10,17 @@ import {
   Share2,
   Clock3,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+
+
+import {
+  getBookmarks,
+  addBookmark,
+  removeBookmark,
+  isBookmarked,
+  type BookmarkedArticle,
+} from "@/lib/bookmarks";
 
 const articles = {
   "1": {
@@ -173,6 +182,40 @@ export default function ArticlePage() {
 
   const article =
     articles[params.id as keyof typeof articles];
+
+  useEffect(() => {
+    if (!params.id) return;
+
+    setBookmarked(isBookmarked(Number(params.id)));
+  }, [params.id]);
+
+  const toggleBookmark = () => {
+    if (!params.id || !article) return;
+
+    const articleId = Number(params.id);
+
+    if (isBookmarked(articleId)) {
+      removeBookmark(articleId);
+      setBookmarked(false);
+      return;
+    }
+
+    const bookmarkArticle: BookmarkedArticle = {
+      id: articleId,
+      title: article.title,
+      description: article.subtitle,
+      author: article.author.name,
+      username: article.author.username,
+      category: article.category,
+      date: article.date,
+      readTime: article.readTime,
+      image: article.coverImage,
+      avatar: article.author.avatar,
+    };
+
+    addBookmark(bookmarkArticle);
+    setBookmarked(true);
+  };
 
   if (!article) {
     return (
@@ -363,7 +406,7 @@ export default function ArticlePage() {
 
                 <button
                   type="button"
-                  onClick={() => setBookmarked(!bookmarked)}
+                  onClick={toggleBookmark}
                   className={`rounded-full border p-3 transition ${
                     bookmarked
                       ? "border-blue-200 bg-blue-50 text-blue-600"
