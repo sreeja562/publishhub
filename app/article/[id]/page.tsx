@@ -39,6 +39,10 @@ import {
   isLiked,
 } from "@/lib/likes";
 
+/* =========================================================
+   ARTICLES DATA
+========================================================= */
+
 const articles = [
   {
     id: 1,
@@ -234,6 +238,10 @@ const articles = [
   },
 ];
 
+/* =========================================================
+   ARTICLE PAGE
+========================================================= */
+
 export default function ArticlePage() {
   const params = useParams();
 
@@ -254,6 +262,10 @@ export default function ArticlePage() {
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
 
+  /* =========================================================
+     LOAD SAVED DATA
+  ========================================================= */
+
   useEffect(() => {
     if (!article) return;
 
@@ -264,21 +276,25 @@ export default function ArticlePage() {
     setReviews(getReviews(article.id));
   }, [article]);
 
+  /* =========================================================
+     ARTICLE NOT FOUND
+  ========================================================= */
+
   if (!article) {
     return (
-      <main className="min-h-screen bg-white">
-        <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-5 text-center">
+      <main className="min-h-screen bg-white text-gray-950 dark:bg-[#101014] dark:text-white">
+        <div className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 text-center">
           <h1 className="text-4xl font-bold">
             Article Not Found
           </h1>
 
-          <p className="mt-3 text-gray-500">
+          <p className="mt-3 text-gray-500 dark:text-gray-400">
             No article exists with this ID.
           </p>
 
           <Link
             href="/articles"
-            className="mt-5 rounded-full bg-black px-6 py-3 text-white"
+            className="mt-6 rounded-full bg-black px-6 py-3 text-white transition hover:bg-blue-600 dark:bg-white dark:text-black dark:hover:bg-gray-200"
           >
             Back to Articles
           </Link>
@@ -287,17 +303,31 @@ export default function ArticlePage() {
     );
   }
 
+  /* =========================================================
+     LIKE
+  ========================================================= */
+
   const handleLike = () => {
     if (liked) {
       removeLike(article.id);
-      setLikes((current) => Math.max(0, current - 1));
+
+      setLikes((current) =>
+        Math.max(0, current - 1)
+      );
+
       setLiked(false);
     } else {
       addLike(article.id);
+
       setLikes((current) => current + 1);
+
       setLiked(true);
     }
   };
+
+  /* =========================================================
+     BOOKMARK
+  ========================================================= */
 
   const handleBookmark = () => {
     if (bookmarked) {
@@ -308,6 +338,10 @@ export default function ArticlePage() {
       setBookmarked(true);
     }
   };
+
+  /* =========================================================
+     SHARE
+  ========================================================= */
 
   const handleShare = async () => {
     try {
@@ -321,24 +355,45 @@ export default function ArticlePage() {
     }
   };
 
+  /* =========================================================
+     ADD COMMENT
+  ========================================================= */
+
   const handleAddComment = () => {
     if (!commentText.trim()) return;
 
-    addComment(article.id, commentText.trim());
+    addComment(
+      article.id,
+      commentText.trim()
+    );
 
-    setComments(getComments(article.id));
+    setComments(
+      getComments(article.id)
+    );
+
     setCommentText("");
   };
 
-  const handleRemoveComment = (commentId: string) => {
+  /* =========================================================
+     REMOVE COMMENT
+  ========================================================= */
+
+  const handleRemoveComment = (
+    commentId: string
+  ) => {
     removeComment(commentId);
 
     setComments((current) =>
       current.filter(
-        (comment) => comment.id !== commentId
+        (comment) =>
+          comment.id !== commentId
       )
     );
   };
+
+  /* =========================================================
+     ADD REVIEW
+  ========================================================= */
 
   const handleAddReview = () => {
     if (!reviewText.trim()) return;
@@ -349,54 +404,66 @@ export default function ArticlePage() {
       reviewRating
     );
 
-    setReviews(getReviews(article.id));
+    setReviews(
+      getReviews(article.id)
+    );
+
     setReviewText("");
     setReviewRating(5);
   };
 
+  /* =========================================================
+     PAGE
+  ========================================================= */
+
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="min-h-screen bg-white text-gray-950 transition-colors dark:bg-[#101014] dark:text-white">
 
-      {/* NAVBAR */}
+      {/* =====================================================
+          ARTICLE HEADER
+      ===================================================== */}
 
-      
-
-
-      {/* ARTICLE HEADER */}
-
-      <section className="bg-white">
+      <section className="bg-white dark:bg-[#101014]">
 
         <div className="mx-auto max-w-4xl px-5 pb-10 pt-12 md:pt-16">
 
+          {/* Back */}
           <Link
             href="/articles"
-            className="flex w-fit items-center gap-2 text-sm text-gray-400 transition hover:text-black"
+            className="flex w-fit items-center gap-2 text-sm text-gray-500 transition hover:text-black dark:text-gray-400 dark:hover:text-white"
           >
             <ArrowLeft size={16} />
+
             All Articles
           </Link>
 
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
+          {/* Category */}
+          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
             {article.category}
           </p>
 
-          <h1 className="mt-6 font-serif text-4xl font-semibold leading-tight md:text-6xl">
+          {/* TITLE */}
+
+          <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-gray-950 dark:text-white md:text-6xl">
             {article.title}
           </h1>
 
-          <p className="mt-6 text-lg leading-8 text-gray-500 md:text-xl">
+          {/* DESCRIPTION */}
+
+          <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-200 md:text-xl">
             {article.description}
           </p>
 
-
           {/* AUTHOR */}
 
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-5 border-b border-black/10 pb-8">
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-5 border-b border-black/10 pb-8 dark:border-white/10">
 
             <Link
               href={`/authors/${article.username}`}
               className="flex items-center gap-3"
             >
+
+              {/* Avatar */}
 
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
                 {article.avatar}
@@ -404,11 +471,11 @@ export default function ArticlePage() {
 
               <div>
 
-                <p className="text-sm font-semibold">
+                <p className="text-sm font-semibold text-gray-950 dark:text-white">
                   {article.author}
                 </p>
 
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {article.date} · {article.readTime}
                 </p>
 
@@ -416,9 +483,11 @@ export default function ArticlePage() {
 
             </Link>
 
+            {/* View Author */}
+
             <Link
               href={`/authors/${article.username}`}
-              className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-medium hover:bg-gray-100"
+              className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-medium text-gray-900 transition hover:bg-gray-100 dark:border-white/20 dark:text-white dark:hover:bg-white/10"
             >
               View Author
             </Link>
@@ -429,8 +498,9 @@ export default function ArticlePage() {
 
       </section>
 
-
-      {/* FEATURED IMAGE */}
+      {/* =====================================================
+          FEATURED IMAGE
+      ===================================================== */}
 
       <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
 
@@ -442,53 +512,62 @@ export default function ArticlePage() {
 
       </div>
 
-
-      {/* ARTICLE CONTENT */}
+      {/* =====================================================
+          ARTICLE CONTENT
+      ===================================================== */}
 
       <article className="mx-auto max-w-3xl px-5 pb-16 md:px-8">
 
-        {article.content.map((section, index) => (
+        {article.content.map(
+          (section, index) => (
+            <section
+              key={index}
+              className="mb-10"
+            >
 
-          <section
-            key={index}
-            className="mb-10"
-          >
+              {/* IMPORTANT:
+                  DARK MODE TEXT FIX
+              */}
 
-            <h2 className="font-serif text-2xl font-semibold md:text-3xl">
-              {section.heading}
-            </h2>
+              <h2 className="font-serif text-2xl font-semibold text-gray-950 dark:text-white md:text-3xl">
+                {section.heading}
+              </h2>
 
-            {section.paragraphs.map(
-              (paragraph, paragraphIndex) => (
+              {section.paragraphs.map(
+                (
+                  paragraph,
+                  paragraphIndex
+                ) => (
+                  <p
+                    key={paragraphIndex}
+                    className="mt-5 text-lg leading-8 text-gray-700 dark:text-gray-200"
+                  >
+                    {paragraph}
+                  </p>
+                )
+              )}
 
-                <p
-                  key={paragraphIndex}
-                  className="mt-5 text-lg leading-8 text-gray-700"
-                >
-                  {paragraph}
-                </p>
+            </section>
+          )
+        )}
 
-              )
-            )}
+        {/* ===================================================
+            ACTION BAR
+        =================================================== */}
 
-          </section>
-
-        ))}
-
-
-        {/* ACTION BAR */}
-
-        <div className="flex flex-wrap items-center justify-between gap-4 border-y border-black/10 py-5">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-y border-black/10 py-5 dark:border-white/10">
 
           <div className="flex gap-3">
+
+            {/* LIKE */}
 
             <button
               type="button"
               onClick={handleLike}
-              className={`flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium ${
+              className={`flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition ${
                 liked
-                  ? "border-red-200 bg-red-50 text-red-600"
-                  : "border-black/10 text-gray-600 hover:bg-gray-100"
+                  ? "border-red-200 bg-red-50 text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400"
+                  : "border-black/10 text-gray-700 hover:bg-gray-100 dark:border-white/20 dark:text-gray-200 dark:hover:bg-white/10"
               }`}
             >
 
@@ -505,19 +584,25 @@ export default function ArticlePage() {
 
             </button>
 
+            {/* COMMENT BUTTON */}
+
             <button
               type="button"
               onClick={() =>
                 document
-                  .getElementById("comments")
+                  .getElementById(
+                    "comments"
+                  )
                   ?.scrollIntoView({
                     behavior: "smooth",
                   })
               }
-              className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-100"
+              className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100 dark:border-white/20 dark:text-gray-200 dark:hover:bg-white/10"
             >
 
-              <MessageCircle size={18} />
+              <MessageCircle
+                size={18}
+              />
 
               Comment
 
@@ -525,16 +610,17 @@ export default function ArticlePage() {
 
           </div>
 
-
           <div className="flex gap-3">
+
+            {/* BOOKMARK */}
 
             <button
               type="button"
               onClick={handleBookmark}
-              className={`rounded-full border p-2.5 ${
+              className={`rounded-full border p-2.5 transition ${
                 bookmarked
-                  ? "border-black bg-black text-white"
-                  : "border-black/10 text-gray-600 hover:bg-gray-100"
+                  ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
+                  : "border-black/10 text-gray-700 hover:bg-gray-100 dark:border-white/20 dark:text-gray-200 dark:hover:bg-white/10"
               }`}
             >
 
@@ -549,10 +635,12 @@ export default function ArticlePage() {
 
             </button>
 
+            {/* SHARE */}
+
             <button
               type="button"
               onClick={handleShare}
-              className="rounded-full border border-black/10 p-2.5 text-gray-600 hover:bg-gray-100"
+              className="rounded-full border border-black/10 p-2.5 text-gray-700 transition hover:bg-gray-100 dark:border-white/20 dark:text-gray-200 dark:hover:bg-white/10"
             >
 
               <Share2 size={18} />
@@ -563,16 +651,19 @@ export default function ArticlePage() {
 
         </div>
 
+        {/* ===================================================
+            AUTHOR CARD
+        =================================================== */}
 
-        {/* AUTHOR CARD */}
+        <div className="mt-10 rounded-3xl border border-black/5 bg-white p-6 md:p-8 dark:border-white/10 dark:bg-[#18181b]">
 
-        <div className="mt-10 rounded-3xl border border-black/5 bg-white p-6 md:p-8">
-
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
             Written by
           </p>
 
           <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
+
+            {/* Avatar */}
 
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-semibold text-blue-600">
               {article.avatar}
@@ -580,19 +671,21 @@ export default function ArticlePage() {
 
             <div className="flex-1">
 
-              <h3 className="text-xl font-semibold">
+              <h3 className="text-xl font-semibold text-gray-950 dark:text-white">
                 {article.author}
               </h3>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                 Writer and contributor at PublishHub.
               </p>
 
             </div>
 
+            {/* Profile */}
+
             <Link
               href={`/authors/${article.username}`}
-              className="rounded-full bg-black px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-600"
+              className="rounded-full bg-black px-5 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-600 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               View Profile
             </Link>
@@ -601,8 +694,9 @@ export default function ArticlePage() {
 
         </div>
 
-
-        {/* COMMENTS */}
+        {/* ===================================================
+            COMMENTS
+        =================================================== */}
 
         <section
           id="comments"
@@ -611,40 +705,48 @@ export default function ArticlePage() {
 
           <div className="flex items-center gap-3">
 
-            <MessageCircle size={21} />
+            <MessageCircle
+              size={21}
+              className="text-gray-900 dark:text-white"
+            />
 
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-2xl font-semibold text-gray-950 dark:text-white">
               Comments
             </h2>
 
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               ({comments.length})
             </span>
 
           </div>
 
-
           {/* COMMENT INPUT */}
 
-          <div className="mt-5 rounded-2xl border border-black/10 p-5">
+          <div className="mt-5 rounded-2xl border border-black/10 p-5 dark:border-white/10 dark:bg-[#141418]">
 
             <textarea
               rows={4}
               value={commentText}
               onChange={(e) =>
-                setCommentText(e.target.value)
+                setCommentText(
+                  e.target.value
+                )
               }
               placeholder="Share your thoughts..."
-              className="w-full resize-none bg-transparent text-sm outline-none"
+              className="w-full resize-none bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
             />
 
             <div className="mt-3 flex justify-end">
 
               <button
                 type="button"
-                onClick={handleAddComment}
-                disabled={!commentText.trim()}
-                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={
+                  handleAddComment
+                }
+                disabled={
+                  !commentText.trim()
+                }
+                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-white dark:text-black dark:hover:bg-gray-200"
               >
                 Post Comment
               </button>
@@ -653,25 +755,24 @@ export default function ArticlePage() {
 
           </div>
 
-
           {/* COMMENTS LIST */}
 
           <div className="mt-5 space-y-4">
 
             {comments.length === 0 ? (
 
-              <div className="rounded-2xl border border-black/5 bg-gray-50 p-6 text-center">
+              <div className="rounded-2xl border border-black/5 bg-gray-50 p-6 text-center dark:border-white/10 dark:bg-[#18181b]">
 
                 <MessageCircle
                   size={30}
-                  className="mx-auto mb-3 text-gray-300"
+                  className="mx-auto mb-3 text-gray-400 dark:text-gray-500"
                 />
 
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
                   No comments yet
                 </p>
 
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Be the first to share your thoughts.
                 </p>
 
@@ -679,60 +780,60 @@ export default function ArticlePage() {
 
             ) : (
 
-              comments.map((comment) => (
+              comments.map(
+                (comment) => (
 
-                <div
-                  key={comment.id}
-                  className="rounded-2xl border border-black/5 bg-white p-5"
-                >
+                  <div
+                    key={comment.id}
+                    className="rounded-2xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#18181b]"
+                  >
 
-                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-4">
 
-                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3">
 
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
-                        {comment.author
-                          .charAt(0)
-                          .toUpperCase()}
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
+                          {comment.author
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+
+                        <div>
+
+                          <p className="text-sm font-semibold text-gray-950 dark:text-white">
+                            {comment.author}
+                          </p>
+
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {comment.date}
+                          </p>
+
+                        </div>
+
                       </div>
 
-                      <div>
-
-                        <p className="text-sm font-semibold">
-                          {comment.author}
-                        </p>
-
-                        <p className="text-xs text-gray-400">
-                          {comment.date}
-                        </p>
-
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleRemoveComment(
+                            comment.id
+                          )
+                        }
+                        className="text-xs text-gray-500 transition hover:text-red-600 dark:text-gray-400"
+                      >
+                        Delete
+                      </button>
 
                     </div>
 
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleRemoveComment(
-                          comment.id
-                        )
-                      }
-                      className="text-xs text-gray-400 transition hover:text-red-600"
-                    >
-                      Delete
-                    </button>
+                    <p className="mt-4 text-sm leading-7 text-gray-700 dark:text-gray-200">
+                      {comment.text}
+                    </p>
 
                   </div>
 
-
-                  <p className="mt-4 text-sm leading-7 text-gray-600">
-                    {comment.text}
-                  </p>
-
-                </div>
-
-              ))
+                )
+              )
 
             )}
 
@@ -740,73 +841,87 @@ export default function ArticlePage() {
 
         </section>
 
+        {/* ===================================================
+            REVIEWS
+        =================================================== */}
 
-        {/* REVIEWS */}
-
-        <section className="mt-14 border-t border-black/10 pt-10">
+        <section className="mt-14 border-t border-black/10 pt-10 dark:border-white/10">
 
           <div className="flex items-center gap-3">
 
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-2xl font-semibold text-gray-950 dark:text-white">
               Reviews
             </h2>
 
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               ({reviews.length})
             </span>
 
           </div>
 
-
           {/* REVIEW FORM */}
 
-          <div className="mt-5 rounded-2xl border border-black/10 p-5">
+          <div className="mt-5 rounded-2xl border border-black/10 p-5 dark:border-white/10 dark:bg-[#141418]">
 
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
               Your Rating
             </p>
 
+            {/* STARS */}
+
             <div className="mt-3 flex gap-1">
 
-              {[1, 2, 3, 4, 5].map((star) => (
+              {[1, 2, 3, 4, 5].map(
+                (star) => (
 
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() =>
-                    setReviewRating(star)
-                  }
-                  className={`text-2xl transition ${
-                    star <= reviewRating
-                      ? "text-yellow-500"
-                      : "text-gray-300"
-                  }`}
-                  aria-label={`Rate ${star} stars`}
-                >
-                  ★
-                </button>
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() =>
+                      setReviewRating(
+                        star
+                      )
+                    }
+                    className={`text-2xl transition ${
+                      star <= reviewRating
+                        ? "text-yellow-500"
+                        : "text-gray-300 dark:text-gray-600"
+                    }`}
+                    aria-label={`Rate ${star} stars`}
+                  >
+                    ★
+                  </button>
 
-              ))}
+                )
+              )}
 
             </div>
+
+            {/* REVIEW TEXT */}
 
             <textarea
               rows={4}
               value={reviewText}
               onChange={(e) =>
-                setReviewText(e.target.value)
+                setReviewText(
+                  e.target.value
+                )
               }
               placeholder="Write your review..."
-              className="mt-4 w-full resize-none rounded-xl border border-black/10 p-4 text-sm outline-none transition focus:border-blue-500"
+              className="mt-4 w-full resize-none rounded-xl border border-black/10 bg-white p-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 dark:border-white/10 dark:bg-[#18181b] dark:text-white dark:placeholder:text-gray-500"
             />
 
             <div className="mt-3 flex justify-end">
 
               <button
                 type="button"
-                onClick={handleAddReview}
-                disabled={!reviewText.trim()}
-                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={
+                  handleAddReview
+                }
+                disabled={
+                  !reviewText.trim()
+                }
+                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-white dark:text-black dark:hover:bg-gray-200"
               >
                 Submit Review
               </button>
@@ -815,20 +930,19 @@ export default function ArticlePage() {
 
           </div>
 
-
           {/* REVIEW LIST */}
 
           <div className="mt-5 space-y-4">
 
             {reviews.length === 0 ? (
 
-              <div className="rounded-2xl border border-black/5 bg-gray-50 p-8 text-center">
+              <div className="rounded-2xl border border-black/5 bg-gray-50 p-8 text-center dark:border-white/10 dark:bg-[#18181b]">
 
-                <p className="font-medium text-gray-700">
+                <p className="font-medium text-gray-900 dark:text-white">
                   No reviews yet
                 </p>
 
-                <p className="mt-1 text-sm text-gray-400">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Be the first to review this article.
                 </p>
 
@@ -836,89 +950,99 @@ export default function ArticlePage() {
 
             ) : (
 
-              reviews.map((review) => (
+              reviews.map(
+                (review) => (
 
-                <div
-                  key={review.id}
-                  className="rounded-2xl border border-black/10 bg-white p-5"
-                >
+                  <div
+                    key={review.id}
+                    className="rounded-2xl border border-black/10 bg-white p-5 dark:border-white/10 dark:bg-[#18181b]"
+                  >
 
-                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-4">
 
-                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3">
 
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
-                        {review.author.charAt(0)}
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                          {review.author.charAt(
+                            0
+                          )}
+                        </div>
+
+                        <div>
+
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {review.author}
+                          </p>
+
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {review.date}
+                          </p>
+
+                        </div>
+
                       </div>
 
-                      <div>
+                      {review.author ===
+                        "You" && (
 
-                        <p className="text-sm font-semibold text-gray-900">
-                          {review.author}
-                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
 
-                        <p className="text-xs text-gray-400">
-                          {review.date}
-                        </p>
+                            removeReview(
+                              review.id
+                            );
 
-                      </div>
+                            setReviews(
+                              (current) =>
+                                current.filter(
+                                  (item) =>
+                                    item.id !==
+                                    review.id
+                                )
+                            );
+
+                          }}
+                          className="text-xs font-medium text-gray-500 transition hover:text-red-600 dark:text-gray-400"
+                        >
+                          Delete
+                        </button>
+
+                      )}
 
                     </div>
 
+                    {/* REVIEW STARS */}
 
-                    {review.author === "You" && (
+                    <div className="mt-3 flex gap-1 text-lg text-yellow-500">
 
-                      <button
-                        type="button"
-                        onClick={() => {
+                      {[1, 2, 3, 4, 5].map(
+                        (star) => (
 
-                          removeReview(
-                            review.id
-                          );
+                          <span
+                            key={star}
+                          >
+                            {star <=
+                            review.rating
+                              ? "★"
+                              : "☆"}
+                          </span>
 
-                          setReviews((current) =>
-                            current.filter(
-                              (item) =>
-                                item.id !==
-                                review.id
-                            )
-                          );
+                        )
+                      )}
 
-                        }}
-                        className="text-xs font-medium text-gray-400 transition hover:text-red-600"
-                      >
-                        Delete
-                      </button>
+                    </div>
 
-                    )}
+                    {/* REVIEW TEXT */}
 
-                  </div>
-
-
-                  <div className="mt-3 flex gap-1 text-lg text-yellow-500">
-
-                    {[1, 2, 3, 4, 5].map(
-                      (star) => (
-
-                        <span key={star}>
-                          {star <= review.rating
-                            ? "★"
-                            : "☆"}
-                        </span>
-
-                      )
-                    )}
+                    <p className="mt-3 text-sm leading-7 text-gray-700 dark:text-gray-200">
+                      {review.text}
+                    </p>
 
                   </div>
 
-
-                  <p className="mt-3 text-sm leading-7 text-gray-700">
-                    {review.text}
-                  </p>
-
-                </div>
-
-              ))
+                )
+              )
 
             )}
 
@@ -928,28 +1052,38 @@ export default function ArticlePage() {
 
       </article>
 
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
 
-      {/* FOOTER */}
+      <footer className="border-t border-black/10 bg-white dark:border-white/10 dark:bg-[#0b0b0d]">
 
-      <footer className="border-t border-black/10 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 px-5 py-8 text-sm md:flex-row md:px-8">
 
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 px-5 py-8 text-sm text-gray-500 md:flex-row md:px-8">
-
-          <p>
+          <p className="text-gray-500 dark:text-gray-400">
             © 2026 PublishHub. All rights reserved.
           </p>
 
           <div className="flex gap-5">
 
-            <Link href="/about">
+            <Link
+              href="/about"
+              className="text-gray-500 transition hover:text-gray-950 dark:text-gray-400 dark:hover:text-white"
+            >
               About
             </Link>
 
-            <Link href="/articles">
+            <Link
+              href="/articles"
+              className="text-gray-500 transition hover:text-gray-950 dark:text-gray-400 dark:hover:text-white"
+            >
               Articles
             </Link>
 
-            <Link href="/authors">
+            <Link
+              href="/authors"
+              className="text-gray-500 transition hover:text-gray-950 dark:text-gray-400 dark:hover:text-white"
+            >
               Authors
             </Link>
 

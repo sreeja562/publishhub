@@ -16,6 +16,7 @@ import {
   Search,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
 import {
   getBookmarks,
   type BookmarkedArticle,
@@ -73,7 +74,8 @@ export default function ReaderDashboard() {
 
   useEffect(() => {
     function checkUser() {
-      const storedUser = localStorage.getItem("publishhubUser");
+      const storedUser =
+        localStorage.getItem("publishhubUser");
 
       if (!storedUser) {
         router.replace("/login");
@@ -105,17 +107,19 @@ export default function ReaderDashboard() {
       router.replace("/");
     };
 
-    window.addEventListener("publishhub-logout", handleLogout);
+    window.addEventListener(
+      "publishhub-logout",
+      handleLogout
+    );
 
     return () => {
-      window.removeEventListener("publishhub-logout", handleLogout);
+      window.removeEventListener(
+        "publishhub-logout",
+        handleLogout
+      );
     };
   }, [router]);
 
-  /*
-   * Don't render the dashboard until we confirm
-   * that the user is logged in.
-   */
   if (!user) {
     return null;
   }
@@ -134,11 +138,11 @@ export default function ReaderDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fafafa]">
+    <main className="min-h-screen bg-white text-gray-900 transition-colors dark:bg-[#0b0b0f] dark:text-white">
 
       {/* ================= TOP NAVBAR ================= */}
 
-      <header className="sticky top-0 z-50 border-b border-black/10 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-black/10 bg-white/95 backdrop-blur dark:border-white/10 dark:bg-[#0b0b0f]/95">
 
         <div className="flex h-16 items-center justify-between px-5 md:px-8">
 
@@ -146,7 +150,7 @@ export default function ReaderDashboard() {
 
           <Link
             href="/"
-            className="text-2xl font-bold"
+            className="text-2xl font-bold text-gray-900 dark:text-white"
           >
             Publish
             <span className="text-blue-600">
@@ -160,13 +164,13 @@ export default function ReaderDashboard() {
 
             <Link
               href="/articles"
-              className="hidden items-center gap-2 text-sm text-gray-500 transition hover:text-black sm:flex"
+              className="hidden items-center gap-2 text-sm text-gray-500 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-white sm:flex"
             >
               <Search size={17} />
               Explore
             </Link>
 
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
               {avatarLetter}
             </div>
 
@@ -184,28 +188,28 @@ export default function ReaderDashboard() {
 
         {/* ================= SIDEBAR ================= */}
 
-        <aside className="hidden w-64 shrink-0 border-r border-black/5 bg-white lg:block">
+        <aside className="hidden w-64 shrink-0 border-r border-black/5 bg-white dark:border-white/10 dark:bg-[#0f0f14] lg:block">
 
           <div className="flex h-full flex-col p-5">
 
 
             {/* READER PROFILE */}
 
-            <div className="mb-7 rounded-2xl bg-[#f8f8f6] p-4">
+            <div className="mb-7 rounded-2xl bg-[#f8f8f6] p-4 dark:bg-white/[0.04]">
 
               <div className="flex items-center gap-3">
 
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
                   {avatarLetter}
                 </div>
 
                 <div className="min-w-0">
 
-                  <p className="truncate text-sm font-semibold text-gray-900">
+                  <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
                     {user.name}
                   </p>
 
-                  <p className="truncate text-xs text-gray-400">
+                  <p className="truncate text-xs text-gray-400 dark:text-gray-500">
                     {user.email}
                   </p>
 
@@ -262,12 +266,12 @@ export default function ReaderDashboard() {
 
             {/* LOGOUT */}
 
-            <div className="mt-auto border-t border-black/5 pt-4">
+            <div className="mt-auto border-t border-black/5 pt-4 dark:border-white/10">
 
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-500 transition hover:bg-red-50 hover:text-red-600"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-500 transition hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-500/10 dark:hover:text-red-400"
               >
                 <LogOut size={18} />
                 Log out
@@ -295,11 +299,11 @@ export default function ReaderDashboard() {
                 Reader Dashboard
               </p>
 
-              <h1 className="mt-2 text-2xl font-semibold">
+              <h1 className="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
                 Welcome back, {user.name} 👋
               </h1>
 
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Discover, save and read your favorite stories.
               </p>
 
@@ -316,11 +320,11 @@ export default function ReaderDashboard() {
                   Reader Dashboard
                 </p>
 
-                <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">
+                <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
                   Welcome back, {user.name} 👋
                 </h1>
 
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                   Discover, save and read stories from PublishHub.
                 </p>
 
@@ -328,7 +332,7 @@ export default function ReaderDashboard() {
 
               <Link
                 href="/articles"
-                className="flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
+                className="flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-600 dark:bg-white dark:text-black dark:hover:bg-blue-600 dark:hover:text-white"
               >
                 <Search size={17} />
                 Explore Articles
@@ -380,17 +384,17 @@ export default function ReaderDashboard() {
 
                 {/* ================= SAVED ARTICLES ================= */}
 
-                <section className="rounded-3xl border border-black/5 bg-white">
+                <section className="rounded-3xl border border-black/5 bg-white dark:border-white/10 dark:bg-[#111116]">
 
-                  <div className="flex items-center justify-between border-b border-black/5 px-6 py-5">
+                  <div className="flex items-center justify-between border-b border-black/5 px-6 py-5 dark:border-white/10">
 
                     <div>
 
-                      <h2 className="font-semibold">
+                      <h2 className="font-semibold text-gray-900 dark:text-white">
                         Saved Articles
                       </h2>
 
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                         Articles you bookmarked for later
                       </p>
 
@@ -406,7 +410,7 @@ export default function ReaderDashboard() {
                   </div>
 
 
-                  <div className="divide-y divide-black/5">
+                  <div className="divide-y divide-black/5 dark:divide-white/10">
 
                     {savedArticles.length === 0 ? (
 
@@ -414,14 +418,14 @@ export default function ReaderDashboard() {
 
                         <Bookmark
                           size={32}
-                          className="mx-auto text-gray-300"
+                          className="mx-auto text-gray-300 dark:text-gray-600"
                         />
 
-                        <p className="mt-3 text-sm font-medium text-gray-600">
+                        <p className="mt-3 text-sm font-medium text-gray-600 dark:text-gray-300">
                           No saved articles yet
                         </p>
 
-                        <p className="mt-1 text-xs text-gray-400">
+                        <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                           Bookmark articles you want to read later.
                         </p>
 
@@ -442,12 +446,12 @@ export default function ReaderDashboard() {
                         <Link
                           key={article.id}
                           href={`/article/${article.id}`}
-                          className="block px-6 py-5 transition hover:bg-[#fafafa]"
+                          className="block px-6 py-5 transition hover:bg-gray-50 dark:hover:bg-white/[0.03]"
                         >
 
                           <div className="flex items-start gap-4">
 
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
                               <Bookmark size={18} />
                             </div>
 
@@ -455,21 +459,21 @@ export default function ReaderDashboard() {
 
                               <div className="flex flex-wrap items-center gap-2">
 
-                                <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-blue-600">
+                                <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
                                   {article.category}
                                 </span>
 
-                                <span className="text-[10px] text-gray-400">
+                                <span className="text-[10px] text-gray-400 dark:text-gray-500">
                                   {article.readTime}
                                 </span>
 
                               </div>
 
-                              <h3 className="mt-2 text-sm font-semibold">
+                              <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
                                 {article.title}
                               </h3>
 
-                              <p className="mt-1 text-xs text-gray-400">
+                              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                                 By {article.author}
                               </p>
 
@@ -477,7 +481,7 @@ export default function ReaderDashboard() {
 
                             <ArrowRight
                               size={17}
-                              className="mt-2 shrink-0 text-gray-300"
+                              className="mt-2 shrink-0 text-gray-300 dark:text-gray-600"
                             />
 
                           </div>
@@ -495,34 +499,34 @@ export default function ReaderDashboard() {
 
                 {/* ================= RECENTLY READ ================= */}
 
-                <section className="rounded-3xl border border-black/5 bg-white">
+                <section className="rounded-3xl border border-black/5 bg-white dark:border-white/10 dark:bg-[#111116]">
 
-                  <div className="border-b border-black/5 px-6 py-5">
+                  <div className="border-b border-black/5 px-6 py-5 dark:border-white/10">
 
-                    <h2 className="font-semibold">
+                    <h2 className="font-semibold text-gray-900 dark:text-white">
                       Recently Read
                     </h2>
 
-                    <p className="mt-1 text-xs text-gray-400">
+                    <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                       Continue reading articles you recently opened
                     </p>
 
                   </div>
 
 
-                  <div className="divide-y divide-black/5">
+                  <div className="divide-y divide-black/5 dark:divide-white/10">
 
                     {recentArticles.map((article) => (
 
                       <Link
                         key={article.id}
                         href={`/article/${article.id}`}
-                        className="block px-6 py-5 transition hover:bg-[#fafafa]"
+                        className="block px-6 py-5 transition hover:bg-gray-50 dark:hover:bg-white/[0.03]"
                       >
 
                         <div className="flex items-start gap-4">
 
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500 dark:bg-white/[0.05] dark:text-gray-400">
                             <Clock size={18} />
                           </div>
 
@@ -532,11 +536,11 @@ export default function ReaderDashboard() {
                               {article.category}
                             </span>
 
-                            <h3 className="mt-1 text-sm font-semibold">
+                            <h3 className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
                               {article.title}
                             </h3>
 
-                            <p className="mt-1 text-xs text-gray-400">
+                            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                               {article.author} · {article.readTime}
                             </p>
 
@@ -544,7 +548,7 @@ export default function ReaderDashboard() {
 
                           <ArrowRight
                             size={17}
-                            className="mt-2 text-gray-300"
+                            className="mt-2 text-gray-300 dark:text-gray-600"
                           />
 
                         </div>
@@ -560,11 +564,11 @@ export default function ReaderDashboard() {
 
                 {/* ================= LIKED ARTICLES ================= */}
 
-                <section className="rounded-3xl border border-black/5 bg-white p-6">
+                <section className="rounded-3xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-[#111116]">
 
                   <div className="flex items-center gap-3">
 
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-500">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400">
                       <Heart
                         size={18}
                         fill="currentColor"
@@ -573,11 +577,11 @@ export default function ReaderDashboard() {
 
                     <div>
 
-                      <h2 className="font-semibold">
+                      <h2 className="font-semibold text-gray-900 dark:text-white">
                         Your Likes
                       </h2>
 
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
                         You have liked 16 articles
                       </p>
 
@@ -605,13 +609,13 @@ export default function ReaderDashboard() {
 
                 {/* ================= READING ACTIVITY ================= */}
 
-                <div className="rounded-3xl border border-black/5 bg-white p-6">
+                <div className="rounded-3xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-[#111116]">
 
-                  <h2 className="font-semibold">
+                  <h2 className="font-semibold text-gray-900 dark:text-white">
                     Reading Activity
                   </h2>
 
-                  <p className="mt-1 text-xs text-gray-400">
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     Your reading this month
                   </p>
 
@@ -619,29 +623,29 @@ export default function ReaderDashboard() {
 
                     <div>
 
-                      <p className="text-3xl font-semibold">
+                      <p className="text-3xl font-semibold text-gray-900 dark:text-white">
                         28
                       </p>
 
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                         Articles read
                       </p>
 
                     </div>
 
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-blue-100 text-sm font-semibold text-blue-600">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-blue-100 text-sm font-semibold text-blue-600 dark:border-blue-500/20 dark:text-blue-400">
                       72%
                     </div>
 
                   </div>
 
-                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-gray-100">
+                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
 
                     <div className="h-full w-[72%] rounded-full bg-blue-600" />
 
                   </div>
 
-                  <p className="mt-3 text-xs text-gray-400">
+                  <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">
                     Keep reading to reach your monthly goal.
                   </p>
 
@@ -650,11 +654,11 @@ export default function ReaderDashboard() {
 
                 {/* ================= FOLLOWED AUTHORS ================= */}
 
-                <div className="rounded-3xl border border-black/5 bg-white p-6">
+                <div className="rounded-3xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-[#111116]">
 
                   <div className="flex items-center justify-between">
 
-                    <h2 className="font-semibold">
+                    <h2 className="font-semibold text-gray-900 dark:text-white">
                       Following
                     </h2>
 
@@ -677,17 +681,17 @@ export default function ReaderDashboard() {
                         className="flex items-center gap-3"
                       >
 
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
                           {author.avatar}
                         </div>
 
                         <div className="min-w-0 flex-1">
 
-                          <p className="truncate text-sm font-semibold">
+                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
                             {author.name}
                           </p>
 
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-gray-400 dark:text-gray-500">
                             @{author.username}
                           </p>
 
@@ -704,9 +708,9 @@ export default function ReaderDashboard() {
 
                 {/* ================= DISCOVER CARD ================= */}
 
-                <div className="rounded-3xl border border-blue-100 bg-blue-50/60 p-6">
+                <div className="rounded-3xl border border-blue-100 bg-blue-50/60 p-6 dark:border-blue-500/20 dark:bg-blue-500/[0.07]">
 
-                  <div className="flex items-center gap-2 text-blue-600">
+                  <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
 
                     <BookOpen size={17} />
 
@@ -716,11 +720,11 @@ export default function ReaderDashboard() {
 
                   </div>
 
-                  <h3 className="mt-4 font-serif text-xl font-semibold">
+                  <h3 className="mt-4 font-serif text-xl font-semibold text-gray-900 dark:text-white">
                     Find your next great read.
                   </h3>
 
-                  <p className="mt-2 text-xs leading-5 text-gray-500">
+                  <p className="mt-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
                     Explore technology, design, development,
                     research and more.
                   </p>
@@ -738,21 +742,21 @@ export default function ReaderDashboard() {
 
                 {/* ================= NOTIFICATIONS ================= */}
 
-                <div className="rounded-3xl border border-black/5 bg-white p-6">
+                <div className="rounded-3xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-[#111116]">
 
                   <div className="flex items-center gap-3">
 
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-50 text-yellow-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10 dark:text-yellow-400">
                       <Bell size={18} />
                     </div>
 
                     <div>
 
-                      <h2 className="font-semibold">
+                      <h2 className="font-semibold text-gray-900 dark:text-white">
                         Notifications
                       </h2>
 
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                         You have 3 new notifications.
                       </p>
 
@@ -779,6 +783,46 @@ export default function ReaderDashboard() {
 
       </div>
 
+
+      {/* ================= FOOTER ================= */}
+
+      <footer className="border-t border-black/10 bg-white dark:border-white/10 dark:bg-[#0b0b0f]">
+
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 px-5 py-8 text-sm text-gray-500 dark:text-gray-400 md:flex-row md:px-8">
+
+          <p>
+            © 2026 PublishHub. All rights reserved.
+          </p>
+
+          <div className="flex gap-5">
+
+            <Link
+              href="/about"
+              className="hover:text-gray-900 dark:hover:text-white"
+            >
+              About
+            </Link>
+
+            <Link
+              href="/articles"
+              className="hover:text-gray-900 dark:hover:text-white"
+            >
+              Articles
+            </Link>
+
+            <Link
+              href="/authors"
+              className="hover:text-gray-900 dark:hover:text-white"
+            >
+              Authors
+            </Link>
+
+          </div>
+
+        </div>
+
+      </footer>
+
     </main>
   );
 }
@@ -804,8 +848,8 @@ function ReaderSidebarLink({
       href={href}
       className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${
         active
-          ? "bg-blue-50 text-blue-600"
-          : "text-gray-500 hover:bg-gray-50 hover:text-black"
+          ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
+          : "text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.04] dark:hover:text-white"
       }`}
     >
       {icon}
@@ -829,21 +873,21 @@ function ReaderStatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-5">
+    <div className="rounded-3xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-[#111116]">
 
       <div className="flex items-center justify-between">
 
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-400 dark:text-gray-500">
           {label}
         </p>
 
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f8f8f6] text-gray-500">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f8f8f6] text-gray-500 dark:bg-white/[0.05] dark:text-gray-400">
           {icon}
         </div>
 
       </div>
 
-      <p className="mt-4 text-2xl font-semibold">
+      <p className="mt-4 text-2xl font-semibold text-gray-900 dark:text-white">
         {value}
       </p>
 

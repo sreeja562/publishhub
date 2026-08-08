@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AdminShortcut from "@/components/AdminShortcut";
 import ThemeProvider from "@/components/ThemeProvider";
+
 export const metadata = {
   title: "PublishHub",
   description: "Multi-Author Publication Website",
@@ -14,14 +15,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <Navbar />
-        <AdminShortcut />
         <ThemeProvider>
+          <Navbar />
+          <AdminShortcut />
+
           {children}
+
+          <Footer />
         </ThemeProvider>
-        <Footer />
       </body>
     </html>
   );

@@ -1,82 +1,108 @@
 import Hero from "@/components/Hero";
 import CategorySection from "@/components/CategorySection";
-import ArticleCard from "@/components/ArticleCard";
 import FeaturedArticle from "@/components/FeaturedArticle";
+import ArticleCard from "@/components/ArticleCard";
 import TopAuthors from "@/components/TopAuthors";
-import { articles } from "@/data/articles";
 import AuthPrompt from "@/components/AuthPrompt";
+import { articles } from "@/data/articles";
 
 export default function Home() {
   return (
-    <main>
-      
-
+    <main className="ph-page">
       {/* Hero */}
       <Hero />
-    
+
       {/* Categories */}
-      <CategorySection />
+      <section className="ph-section">
+        <CategorySection />
+      </section>
 
       {/* Featured */}
-      <FeaturedArticle />
-
-      {/* Login / Signup Popup */}
-      <AuthPrompt />
+      <section className="ph-section">
+        <FeaturedArticle />
+      </section>
 
       {/* Latest Publications */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
-        <div className="mb-10">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#7C3AED]">
-            Fresh from the community
-          </p>
+      <section
+        className="
+          ph-section
+          px-6
+          py-20
+          sm:px-10
+          lg:px-16
+        "
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10">
+            <p
+              className="
+                text-sm
+                font-semibold
+                uppercase
+                tracking-[0.2em]
+                text-[#7C3AED]
+              "
+            >
+              Latest
+            </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-gray-900">
-            Latest Publications
-          </h2>
+            <h2
+              className="
+                mt-2
+                text-3xl
+                font-bold
+                tracking-tight
+                text-slate-900
 
-          <p className="mt-3 max-w-2xl text-gray-500">
-            Explore the latest ideas, tutorials, stories, and insights
-            published by our authors.
-          </p>
-        </div>
+                sm:text-4xl
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-            />
-          ))}
-        </div>
-      </section>
+                dark:text-white
+              "
+            >
+              Latest Publications
+            </h2>
 
-      {/* Top Authors */}
-      <TopAuthors />
+            <p
+              className="
+                mt-3
+                max-w-2xl
+                text-slate-600
+                dark:text-slate-400
+              "
+            >
+              Discover fresh ideas and perspectives
+              from the PublishHub community.
+            </p>
+          </div>
 
-      {/* CTA */}
-      <section className="bg-[#18181B] text-white">
-        <div className="mx-auto max-w-4xl px-6 py-20 text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#A78BFA]">
-            Join PublishHub
-          </p>
+          <div
+            className="
+              grid
+              gap-6
 
-          <h2 className="mt-3 text-3xl font-bold md:text-4xl">
-            Have a story to share?
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-2xl text-gray-400">
-            Join PublishHub and share your knowledge, ideas, tutorials,
-            and experiences with readers around the world.
-          </p>
-
-          <a
-            href="/register"
-            className="mt-8 inline-block rounded-lg bg-[#7C3AED] px-6 py-3 font-semibold text-white transition hover:bg-[#6D28D9]"
+              md:grid-cols-2
+              lg:grid-cols-3
+            "
           >
-            Become an Author
-          </a>
+            {articles
+              .slice(0, 6)
+              .map((article) => (
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                />
+              ))}
+          </div>
         </div>
       </section>
+
+      {/* Authors */}
+      <section className="ph-section">
+        <TopAuthors />
+      </section>
+
+      {/* Authentication prompt */}
+      <AuthPrompt />
     </main>
   );
 }

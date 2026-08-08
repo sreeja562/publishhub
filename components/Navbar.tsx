@@ -2,176 +2,354 @@
 
 import Link from "next/link";
 import {
-  BookOpen,
+  Moon,
+  Sun,
   Menu,
   X,
-  Sun,
-  Moon,
+  BookOpen,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "@/components/ThemeProvider";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const { theme, toggleTheme } = useTheme();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  /* =====================================================
+     CHECK LOGIN
+  ===================================================== */
 
   useEffect(() => {
     const checkLogin = () => {
-      const user = localStorage.getItem("publishhubUser");
-      setIsLoggedIn(!!user);
+      const user =
+        localStorage.getItem("publishhubUser");
+
+      setLoggedIn(!!user);
     };
 
     checkLogin();
 
-    const savedTheme = localStorage.getItem("publishhub-theme");
+    window.addEventListener(
+      "publishhub-auth-change",
+      checkLogin
+    );
 
-    if (savedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-      setIsDark(true);
-    } else {
-      document.documentElement.classList.remove("dark");
-      setIsDark(false);
-    }
-
-    window.addEventListener("storage", checkLogin);
-    window.addEventListener("publishhub-login", checkLogin);
-    window.addEventListener("publishhub-logout", checkLogin);
+    window.addEventListener(
+      "storage",
+      checkLogin
+    );
 
     return () => {
-      window.removeEventListener("storage", checkLogin);
-      window.removeEventListener("publishhub-login", checkLogin);
-      window.removeEventListener("publishhub-logout", checkLogin);
+      window.removeEventListener(
+        "publishhub-auth-change",
+        checkLogin
+      );
+
+      window.removeEventListener(
+        "storage",
+        checkLogin
+      );
     };
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = !isDark;
+  /* =====================================================
+     HIDE PUBLIC NAVBAR ON ADMIN PAGES
+  ===================================================== */
 
-    setIsDark(newTheme);
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
-    if (newTheme) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("publishhub-theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("publishhub-theme", "light");
-    }
-  };
+  /* =====================================================
+     NAVIGATION
+  ===================================================== */
+
+  const navItems = [
+    {
+      name: "Home",
+      href: "/",
+    },
+    {
+      name: "Explore",
+      href: "/explore",
+    },
+    {
+      name: "Publications",
+      href: "/publications",
+    },
+    {
+      name: "Authors",
+      href: "/authors",
+    },
+    {
+      name: "About",
+      href: "/about",
+    },
+    {
+      name: "Contact",
+      href: "/contact",
+    },
+  ];
+
+  /* =====================================================
+     LOGOUT
+  ===================================================== */
 
   const handleLogout = () => {
     localStorage.removeItem("publishhubUser");
 
-    setIsLoggedIn(false);
-    setIsOpen(false);
+    window.dispatchEvent(
+      new Event("publishhub-auth-change")
+    );
 
-    window.dispatchEvent(new Event("publishhub-logout"));
+    setLoggedIn(false);
+    setMenuOpen(false);
 
-    window.location.href = "/";
+    router.push("/");
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur transition-colors duration-300 dark:border-gray-800 dark:bg-gray-950/95">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        
-        {/* Logo */}
+    <header
+      className="
+        sticky
+        top-0
+        z-50
+        w-full
+
+        border-b
+        border-gray-200
+
+        bg-white/90
+        backdrop-blur-xl
+
+        dark:border-white/10
+        dark:bg-[#09090b]/90
+
+        transition-colors
+        duration-300
+      "
+    >
+      <nav
+        className="
+          mx-auto
+          flex
+          h-[76px]
+          max-w-7xl
+          items-center
+          justify-between
+
+          px-5
+          sm:px-8
+          lg:px-10
+        "
+      >
+
+        {/* =================================================
+            LOGO
+        ================================================= */}
+
         <Link
           href="/"
-          className="flex items-center gap-2"
+          className="
+            flex
+            shrink-0
+            items-center
+            gap-3
+          "
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white dark:bg-white dark:text-black">
-            <BookOpen size={21} />
+          <div
+            className="
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+
+              rounded-xl
+
+              bg-slate-950
+              text-white
+
+              shadow-sm
+
+              transition-all
+              duration-300
+
+              dark:bg-white
+              dark:text-slate-950
+            "
+          >
+            <BookOpen
+              size={23}
+              strokeWidth={2}
+            />
           </div>
 
-          <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <span
+            className="
+              text-xl
+              font-bold
+              tracking-tight
+
+              text-slate-900
+
+              dark:text-white
+            "
+          >
             PublishHub
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden items-center gap-7 md:flex">
+        {/* =================================================
+            DESKTOP NAVIGATION
+        ================================================= */}
 
-          <Link
-            href="/"
-            className="text-sm font-medium text-gray-700 transition hover:text-[#7C3AED] dark:text-gray-300"
-          >
-            Home
-          </Link>
+        <div
+          className="
+            hidden
+            items-center
+            gap-7
 
-          <Link
-            href="/explore"
-            className="text-sm font-medium text-gray-700 transition hover:text-[#7C3AED] dark:text-gray-300"
-          >
-            Explore
-          </Link>
+            lg:flex
+          "
+        >
+          {navItems.map((item) => {
+            const active =
+              pathname === item.href;
 
-          <Link
-            href="/articles"
-            className="text-sm font-medium text-gray-700 transition hover:text-[#7C3AED] dark:text-gray-300"
-          >
-            Publications
-          </Link>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  relative
+                  py-2
 
-          <Link
-            href="/authors"
-            className="text-sm font-medium text-gray-700 transition hover:text-[#7C3AED] dark:text-gray-300"
-          >
-            Authors
-          </Link>
+                  text-sm
+                  font-medium
 
-          <Link
-            href="/about"
-            className="text-sm font-medium text-gray-700 transition hover:text-[#7C3AED] dark:text-gray-300"
-          >
-            About
-          </Link>
+                  transition-colors
+                  duration-200
 
-          <Link
-            href="/contact"
-            className="text-sm font-medium text-gray-700 transition hover:text-[#7C3AED] dark:text-gray-300"
-          >
-            Contact
-          </Link>
+                  ${
+                    active
+                      ? "text-[#7C3AED]"
+                      : "text-slate-600 hover:text-[#7C3AED] dark:text-slate-300 dark:hover:text-purple-400"
+                  }
+                `}
+              >
+                {item.name}
 
+                {/* Active indicator */}
+
+                {active && (
+                  <span
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      h-0.5
+                      w-full
+                      rounded-full
+                      bg-[#7C3AED]
+                    "
+                  />
+                )}
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Desktop Right Side */}
-        <div className="hidden items-center gap-3 md:flex">
+        {/* =================================================
+            DESKTOP RIGHT SIDE
+        ================================================= */}
 
-          {/* Theme Toggle */}
+        <div
+          className="
+            hidden
+            items-center
+            gap-3
+
+            lg:flex
+          "
+        >
+
+          {/* Theme Button */}
+
           <button
             type="button"
             onClick={toggleTheme}
-            aria-label="Toggle dark mode"
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+            aria-label="Toggle theme"
+            className="
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+
+              rounded-xl
+
+              border
+              border-gray-200
+
+              bg-gray-50
+
+              text-slate-700
+
+              transition-all
+              duration-300
+
+              hover:border-[#7C3AED]
+              hover:bg-purple-50
+              hover:text-[#7C3AED]
+
+              dark:border-white/10
+              dark:bg-white/5
+              dark:text-white
+
+              dark:hover:border-purple-500/40
+              dark:hover:bg-purple-500/10
+              dark:hover:text-purple-400
+            "
           >
-            {isDark ? (
-              <Sun size={19} />
+            {theme === "dark" ? (
+              <Sun size={20} />
             ) : (
-              <Moon size={19} />
+              <Moon size={20} />
             )}
           </button>
 
-          {!isLoggedIn ? (
-            <>
-              <Link
-                href="/login"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-              >
-                Login
-              </Link>
+          {/* =================================================
+              LOGGED IN
+          ================================================= */}
 
-              <Link
-                href="/register"
-                className="rounded-lg bg-[#7C3AED] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#6D28D9]"
-              >
-                Sign Up
-              </Link>
-            </>
-          ) : (
+          {loggedIn ? (
             <>
               <Link
-                href="/dashboard"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                href="/account"
+                className="
+                  rounded-lg
+                  px-3
+                  py-2
+
+                  text-sm
+                  font-medium
+
+                  text-slate-700
+
+                  transition-colors
+
+                  hover:text-[#7C3AED]
+
+                  dark:text-slate-300
+                  dark:hover:text-purple-400
+                "
               >
                 Account
               </Link>
@@ -179,155 +357,320 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+                className="
+                  rounded-xl
+
+                  bg-slate-900
+
+                  px-5
+                  py-2.5
+
+                  text-sm
+                  font-semibold
+                  text-white
+
+                  transition-all
+                  duration-300
+
+                  hover:bg-[#7C3AED]
+                  hover:shadow-lg
+                  hover:shadow-purple-500/20
+
+                  dark:bg-white
+                  dark:text-slate-900
+
+                  dark:hover:bg-[#7C3AED]
+                  dark:hover:text-white
+                "
               >
                 Logout
               </button>
             </>
+          ) : (
+
+            /* =================================================
+               LOGGED OUT
+            ================================================= */
+
+            <Link
+              href="/login"
+              className="
+                rounded-xl
+
+                bg-slate-900
+
+                px-5
+                py-2.5
+
+                text-sm
+                font-semibold
+                text-white
+
+                transition-all
+                duration-300
+
+                hover:bg-[#7C3AED]
+                hover:shadow-lg
+                hover:shadow-purple-500/20
+
+                dark:bg-white
+                dark:text-slate-900
+
+                dark:hover:bg-[#7C3AED]
+                dark:hover:text-white
+              "
+            >
+              Login
+            </Link>
           )}
-        </div>
-
-        {/* Mobile Right Side */}
-        <div className="flex items-center gap-2 md:hidden">
-
-          {/* Mobile Theme Toggle */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Toggle dark mode"
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-          >
-            {isDark ? (
-              <Sun size={19} />
-            ) : (
-              <Moon size={19} />
-            )}
-          </button>
-
-          {/* Mobile Menu Button */}
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="rounded-lg p-2 text-gray-800 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-            aria-label="Toggle menu"
-            aria-expanded={isOpen}
-          >
-            {isOpen ? (
-              <X size={24} />
-            ) : (
-              <Menu size={24} />
-            )}
-          </button>
 
         </div>
 
-      </div>
+        {/* =================================================
+            MOBILE MENU BUTTON
+        ================================================= */}
 
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="border-t border-gray-200 bg-white px-6 py-5 transition-colors duration-300 dark:border-gray-800 dark:bg-gray-950 md:hidden">
+        <button
+          type="button"
+          onClick={() =>
+            setMenuOpen(!menuOpen)
+          }
+          aria-label="Toggle menu"
+          className="
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
 
-          <div className="flex flex-col gap-4">
+            rounded-xl
 
-            <Link
-              href="/"
-              onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-gray-700 hover:text-[#7C3AED] dark:text-gray-300"
+            border
+            border-gray-200
+
+            bg-gray-50
+
+            text-slate-800
+
+            lg:hidden
+
+            dark:border-white/10
+            dark:bg-white/5
+            dark:text-white
+          "
+        >
+          {menuOpen ? (
+            <X size={22} />
+          ) : (
+            <Menu size={22} />
+          )}
+        </button>
+
+      </nav>
+
+      {/* =====================================================
+          MOBILE NAVIGATION
+      ===================================================== */}
+
+      {menuOpen && (
+        <div
+          className="
+            border-t
+            border-gray-200
+
+            bg-white
+
+            px-5
+            pb-6
+            pt-4
+
+            dark:border-white/10
+            dark:bg-[#09090b]
+
+            lg:hidden
+          "
+        >
+          <div
+            className="
+              flex
+              flex-col
+              gap-1
+            "
+          >
+
+            {/* Navigation Links */}
+
+            {navItems.map((item) => {
+              const active =
+                pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() =>
+                    setMenuOpen(false)
+                  }
+                  className={`
+                    rounded-xl
+                    px-4
+                    py-3
+
+                    text-sm
+                    font-medium
+
+                    transition-colors
+
+                    ${
+                      active
+                        ? "bg-purple-50 text-[#7C3AED] dark:bg-purple-500/10 dark:text-purple-400"
+                        : "text-slate-700 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-white/5"
+                    }
+                  `}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+
+            {/* Divider */}
+
+            <div
+              className="
+                my-3
+                h-px
+                bg-gray-200
+
+                dark:bg-white/10
+              "
+            />
+
+            {/* Mobile Theme */}
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="
+                flex
+                items-center
+                gap-3
+
+                rounded-xl
+
+                px-4
+                py-3
+
+                text-left
+                text-sm
+                font-medium
+
+                text-slate-700
+
+                hover:bg-gray-50
+
+                dark:text-slate-300
+                dark:hover:bg-white/5
+              "
             >
-              Home
-            </Link>
-
-            <Link
-              href="/explore"
-              onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-gray-700 hover:text-[#7C3AED] dark:text-gray-300"
-            >
-              Explore
-            </Link>
-
-            <Link
-              href="/articles"
-              onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-gray-700 hover:text-[#7C3AED] dark:text-gray-300"
-            >
-              Publications
-            </Link>
-
-            <Link
-              href="/authors"
-              onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-gray-700 hover:text-[#7C3AED] dark:text-gray-300"
-            >
-              Authors
-            </Link>
-
-            <Link
-              href="/about"
-              onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-gray-700 hover:text-[#7C3AED] dark:text-gray-300"
-            >
-              About
-            </Link>
-
-            <Link
-              href="/contact"
-              onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-gray-700 hover:text-[#7C3AED] dark:text-gray-300"
-            >
-              Contact
-            </Link>
-
-            {/* Mobile Auth */}
-            <div className="mt-2 border-t border-gray-200 pt-4 dark:border-gray-800">
-
-              {!isLoggedIn ? (
-                <div className="flex gap-3">
-
-                  <Link
-                    href="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="flex-1 rounded-lg border border-gray-200 py-2 text-center text-sm font-medium text-gray-700 hover:border-[#7C3AED] hover:text-[#7C3AED] dark:border-gray-700 dark:text-gray-300"
-                  >
-                    Login
-                  </Link>
-
-                  <Link
-                    href="/register"
-                    onClick={() => setIsOpen(false)}
-                    className="flex-1 rounded-lg bg-[#7C3AED] py-2 text-center text-sm font-medium text-white hover:bg-[#6D28D9]"
-                  >
-                    Sign Up
-                  </Link>
-
-                </div>
+              {theme === "dark" ? (
+                <>
+                  <Sun size={19} />
+                  Light Mode
+                </>
               ) : (
-                <div className="flex gap-3">
-
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setIsOpen(false)}
-                    className="flex-1 rounded-lg border border-gray-200 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-                  >
-                    Account
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex-1 rounded-lg bg-gray-900 py-2 text-sm font-medium text-white hover:bg-gray-700 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-                  >
-                    Logout
-                  </button>
-
-                </div>
+                <>
+                  <Moon size={19} />
+                  Dark Mode
+                </>
               )}
+            </button>
 
-            </div>
+            {/* =================================================
+                MOBILE AUTH
+            ================================================= */}
+
+            {loggedIn ? (
+              <>
+                <Link
+                  href="/account"
+                  onClick={() =>
+                    setMenuOpen(false)
+                  }
+                  className="
+                    rounded-xl
+                    px-4
+                    py-3
+
+                    text-sm
+                    font-medium
+
+                    text-slate-700
+
+                    hover:bg-gray-50
+
+                    dark:text-slate-300
+                    dark:hover:bg-white/5
+                  "
+                >
+                  Account
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="
+                    mt-2
+                    rounded-xl
+
+                    bg-slate-900
+
+                    px-4
+                    py-3
+
+                    text-sm
+                    font-semibold
+                    text-white
+
+                    dark:bg-white
+                    dark:text-slate-900
+                  "
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() =>
+                  setMenuOpen(false)
+                }
+                className="
+                  mt-2
+                  rounded-xl
+
+                  bg-[#7C3AED]
+
+                  px-4
+                  py-3
+
+                  text-center
+
+                  text-sm
+                  font-semibold
+                  text-white
+
+                  transition-all
+
+                  hover:bg-[#6D28D9]
+                "
+              >
+                Login
+              </Link>
+            )}
 
           </div>
-
         </div>
       )}
-    </nav>
+    </header>
   );
 }
