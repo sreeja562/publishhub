@@ -7,7 +7,6 @@ import {
   ArrowRight,
   Check,
   ExternalLink,
-  FileText,
   Share2,
 } from "lucide-react";
 import { useState } from "react";
@@ -149,36 +148,75 @@ export default function AuthorProfilePage() {
   const params = useParams();
 
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const username = params.username as string;
 
-  const author =
-    authors[username as keyof typeof authors];
+  const author = authors[username as keyof typeof authors];
 
-  // --------------------------------
+  // SHARE FUNCTION
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+
+    try {
+      // Mobile / supported browsers
+      if (navigator.share) {
+        await navigator.share({
+          title: `${author.name} - PublishHub`,
+          text: `Check out ${author.name}'s author profile on PublishHub.`,
+          url: shareUrl,
+        });
+
+        return;
+      }
+
+      // Desktop fallback
+      await navigator.clipboard.writeText(shareUrl);
+
+      setIsCopied(true);
+
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    } catch (error) {
+      // User cancelled share dialog
+      if (
+        error instanceof DOMException &&
+        error.name === "AbortError"
+      ) {
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+
+        setIsCopied(true);
+
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 2000);
+      } catch {
+        console.error("Unable to share profile.");
+      }
+    }
+  };
+
   // AUTHOR NOT FOUND
-  // --------------------------------
-
   if (!author) {
     return (
-      <main className="min-h-screen bg-white">
-        <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center">
-          <FileText
-            size={50}
-            className="mb-5 text-gray-300"
-          />
-
-          <h1 className="text-3xl font-bold text-gray-900">
+      <main className="min-h-screen bg-white text-gray-900 dark:bg-[#0b0b0f] dark:text-white">
+        <div className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-5 text-center">
+          <h1 className="text-3xl font-bold">
             Author not found
           </h1>
 
-          <p className="mt-3 text-gray-500">
+          <p className="mt-3 text-gray-500 dark:text-gray-400">
             This author profile does not exist.
           </p>
 
           <Link
             href="/authors"
-            className="mt-6 flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
+            className="mt-6 flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-[#7C3AED] dark:bg-white dark:text-black dark:hover:bg-[#7C3AED] dark:hover:text-white"
           >
             <ArrowLeft size={16} />
             Back to Authors
@@ -189,20 +227,18 @@ export default function AuthorProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white text-gray-900 transition-colors dark:bg-[#0b0b0f] dark:text-white">
 
-      {/* =========================================
-          PROFILE HEADER
-      ========================================= */}
+      {/* PROFILE HEADER */}
 
-      <section className="border-b border-black/5">
+      <section className="border-b border-black/5 dark:border-white/10">
         <div className="mx-auto max-w-6xl px-5 py-12 md:px-8 md:py-16">
 
-          {/* Back Button */}
+          {/* BACK BUTTON */}
 
           <Link
             href="/authors"
-            className="mb-10 flex w-fit items-center gap-2 text-sm text-gray-500 transition hover:text-black"
+            className="mb-10 flex w-fit items-center gap-2 text-sm text-gray-500 transition hover:text-[#7C3AED] dark:text-gray-400 dark:hover:text-[#a78bfa]"
           >
             <ArrowLeft size={16} />
             All Authors
@@ -210,21 +246,17 @@ export default function AuthorProfilePage() {
 
           <div className="grid gap-10 md:grid-cols-[auto_1fr]">
 
-            {/* =====================================
-                AVATAR
-            ===================================== */}
+            {/* AVATAR */}
 
-            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-blue-100 text-4xl font-semibold text-blue-600 md:h-36 md:w-36 md:text-5xl">
+            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-purple-100 text-4xl font-semibold text-[#7C3AED] dark:bg-purple-500/15 dark:text-[#a78bfa] md:h-36 md:w-36 md:text-5xl">
               {author.avatar}
             </div>
 
-            {/* =====================================
-                AUTHOR INFORMATION
-            ===================================== */}
+            {/* AUTHOR INFORMATION */}
 
             <div>
 
-              <p className="text-sm font-medium text-blue-600">
+              <p className="text-sm font-medium text-[#7C3AED] dark:text-[#a78bfa]">
                 {author.role}
               </p>
 
@@ -232,78 +264,81 @@ export default function AuthorProfilePage() {
                 {author.name}
               </h1>
 
-              <p className="mt-2 text-sm text-gray-400">
+              <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
                 @{author.username}
               </p>
 
-              <p className="mt-5 max-w-2xl text-base leading-7 text-gray-500">
+              <p className="mt-5 max-w-2xl text-base leading-7 text-gray-500 dark:text-gray-400">
                 {author.bio}
               </p>
 
-              {/* =================================
-                  TOPICS
-              ================================= */}
+              {/* TOPICS */}
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {author.topics.map((topic) => (
                   <span
                     key={topic}
-                    className="rounded-full bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600"
+                    className="rounded-full bg-gray-100 px-4 py-2 text-xs font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300"
                   >
                     {topic}
                   </span>
                 ))}
               </div>
 
-              {/* =================================
-                  ACTIONS
-              ================================= */}
+              {/* ACTION BUTTONS */}
 
               <div className="mt-7 flex flex-wrap gap-3">
 
-                {/* Follow */}
+                {/* FOLLOW BUTTON */}
 
                 <button
                   type="button"
                   onClick={() =>
-                    setIsFollowing(!isFollowing)
+                    setIsFollowing((prev) => !prev)
                   }
                   className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition ${
                     isFollowing
-                      ? "border border-black/10 bg-white text-black hover:bg-gray-100"
-                      : "bg-black text-white hover:bg-blue-600"
+                      ? "border border-gray-300 bg-white text-gray-900 hover:bg-gray-100 dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                      : "bg-black text-white hover:bg-[#7C3AED] dark:bg-white dark:text-black dark:hover:bg-[#7C3AED] dark:hover:text-white"
                   }`}
                 >
                   {isFollowing ? (
                     <>
                       <Check size={16} />
-                      Following
+                      <span>Following</span>
                     </>
                   ) : (
                     "Follow"
                   )}
                 </button>
 
-                {/* Share */}
+                {/* SHARE BUTTON */}
 
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-full border border-black/10 px-6 py-3 text-sm font-medium transition hover:bg-gray-100"
+                  onClick={handleShare}
+                  className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-medium text-gray-900 transition hover:bg-gray-100 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                 >
-                  <Share2 size={16} />
-                  Share
+                  {isCopied ? (
+                    <>
+                      <Check size={16} />
+                      Link copied!
+                    </>
+                  ) : (
+                    <>
+                      <Share2 size={16} />
+                      Share
+                    </>
+                  )}
                 </button>
 
               </div>
-
             </div>
           </div>
 
-          {/* =====================================
-              AUTHOR DETAILS
-          ===================================== */}
+          {/* AUTHOR DETAILS */}
 
-          <div className="mt-10 flex flex-wrap gap-6 border-t border-black/5 pt-6 text-sm text-gray-500">
+          <div className="mt-10 flex flex-wrap gap-6 border-t border-black/5 pt-6 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
 
             <span>
               📍 {author.location}
@@ -317,56 +352,53 @@ export default function AuthorProfilePage() {
               href={`https://${author.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 transition hover:text-black"
+              className="flex items-center gap-1 transition hover:text-[#7C3AED] dark:hover:text-[#a78bfa]"
             >
               {author.website}
               <ExternalLink size={14} />
             </a>
 
           </div>
-
         </div>
       </section>
 
-      {/* =========================================
-          AUTHOR STATS
-      ========================================= */}
+      {/* AUTHOR STATS */}
 
-      <section className="border-b border-black/5">
+      <section className="border-b border-black/5 dark:border-white/10">
         <div className="mx-auto grid max-w-6xl grid-cols-3 px-5 md:px-8">
 
-          {/* Articles */}
+          {/* ARTICLES */}
 
-          <div className="border-r border-black/5 py-8 text-center">
-            <p className="text-3xl font-bold text-gray-900">
+          <div className="border-r border-black/5 py-8 text-center dark:border-white/10">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {author.articles}
             </p>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Articles
             </p>
           </div>
 
-          {/* Followers */}
+          {/* FOLLOWERS */}
 
-          <div className="border-r border-black/5 py-8 text-center">
-            <p className="text-3xl font-bold text-gray-900">
+          <div className="border-r border-black/5 py-8 text-center dark:border-white/10">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {author.followers}
             </p>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Followers
             </p>
           </div>
 
-          {/* Following */}
+          {/* FOLLOWING */}
 
           <div className="py-8 text-center">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {author.following}
             </p>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Following
             </p>
           </div>
@@ -374,42 +406,34 @@ export default function AuthorProfilePage() {
         </div>
       </section>
 
-      {/* =========================================
-          AUTHOR ARTICLES
-      ========================================= */}
+      {/* ARTICLES */}
 
       <section className="mx-auto max-w-6xl px-5 py-12 md:px-8 md:py-16">
 
         <div className="mb-8 flex items-end justify-between">
 
           <div>
-
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#7C3AED] dark:text-[#a78bfa]">
               Published
             </p>
 
-            <h2 className="mt-2 font-serif text-3xl font-semibold">
+            <h2 className="mt-2 font-serif text-3xl font-semibold text-gray-900 dark:text-white">
               Articles by {author.name.split(" ")[0]}
             </h2>
-
           </div>
 
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-400 dark:text-gray-500">
             {author.articlesList.length} articles
           </p>
 
         </div>
-
-        {/* =====================================
-            ARTICLE LIST
-        ===================================== */}
 
         <div className="space-y-6">
 
           {author.articlesList.map((article) => (
             <article
               key={article.id}
-              className="group overflow-hidden rounded-2xl border border-black/5 bg-white transition hover:-translate-y-1 hover:shadow-lg"
+              className="group overflow-hidden rounded-2xl border border-black/5 bg-white transition hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
             >
 
               <div className="grid md:grid-cols-[260px_1fr]">
@@ -431,29 +455,25 @@ export default function AuthorProfilePage() {
 
                 <div className="p-6 md:p-8">
 
-                  <span className="inline-block rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
+                  <span className="inline-block rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
                     {article.category}
                   </span>
 
-                  <Link
-                    href={`/article/${article.id}`}
-                  >
-                    <h3 className="mt-4 font-serif text-2xl font-semibold leading-tight transition group-hover:text-blue-600">
+                  <Link href={`/article/${article.id}`}>
+                    <h3 className="mt-4 font-serif text-2xl font-semibold leading-tight text-gray-900 transition group-hover:text-[#7C3AED] dark:text-white dark:group-hover:text-[#a78bfa]">
                       {article.title}
                     </h3>
                   </Link>
 
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-500">
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
                     {article.description}
                   </p>
 
                   {/* META */}
 
-                  <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                  <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
                     <span>{article.date}</span>
-
                     <span>·</span>
-
                     <span>{article.readTime}</span>
                   </div>
 
@@ -461,29 +481,24 @@ export default function AuthorProfilePage() {
 
                   <Link
                     href={`/article/${article.id}`}
-                    className="mt-5 flex w-fit items-center gap-2 text-sm font-medium transition hover:text-blue-600"
+                    className="mt-5 flex w-fit items-center gap-2 text-sm font-medium text-gray-900 transition hover:text-[#7C3AED] dark:text-gray-200 dark:hover:text-[#a78bfa]"
                   >
                     Read article
                     <ArrowRight size={16} />
                   </Link>
 
                 </div>
-
               </div>
-
             </article>
           ))}
 
         </div>
-
       </section>
 
-      {/* =========================================
-          FOOTER
-      ========================================= */}
+      {/* FOOTER */}
 
-      <footer className="border-t border-black/5 py-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 text-sm text-gray-400 md:px-8">
+      <footer className="border-t border-black/5 py-8 dark:border-white/10">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 text-sm text-gray-400 dark:text-gray-500 md:px-8">
 
           <p>
             © 2026 PublishHub
@@ -491,7 +506,7 @@ export default function AuthorProfilePage() {
 
           <Link
             href="/authors"
-            className="transition hover:text-black"
+            className="transition hover:text-[#7C3AED] dark:hover:text-[#a78bfa]"
           >
             Explore more authors
           </Link>

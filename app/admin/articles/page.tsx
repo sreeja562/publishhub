@@ -115,250 +115,535 @@ export default function AdminArticlesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-8">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-white text-slate-900 transition-colors dark:bg-[#0b0b0f] dark:text-white">
 
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3">
-            <FileText
-              size={28}
-              className="text-gray-800"
-            />
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-            <h1 className="text-3xl font-bold text-gray-900">
-              Published Articles
-            </h1>
-          </div>
+      <div className="mb-8">
+        <div className="flex items-center gap-3">
 
-          <p className="mt-2 text-gray-500">
-            Manage all articles published on your publication.
+          <FileText
+            size={28}
+            className="text-gray-800 dark:text-white"
+          />
+
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Published Articles
+          </h1>
+
+        </div>
+
+        <p className="mt-2 text-gray-500 dark:text-gray-400">
+          Manage all articles published on your publication.
+        </p>
+      </div>
+
+      {/* =================================================
+          STATS
+      ================================================= */}
+
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+
+        {/* Total Articles */}
+
+        <div
+          className="
+            rounded-xl
+            border
+            border-gray-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-all
+            hover:-translate-y-1
+            hover:shadow-md
+
+            dark:border-white/10
+            dark:bg-white/[0.04]
+            dark:hover:bg-white/[0.06]
+          "
+        >
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Total Articles
+          </p>
+
+          <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
+            {articles.length}
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {/* Published */}
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">
-              Total Articles
-            </p>
+        <div
+          className="
+            rounded-xl
+            border
+            border-gray-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-all
+            hover:-translate-y-1
+            hover:shadow-md
 
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {articles.length}
-            </p>
-          </div>
+            dark:border-white/10
+            dark:bg-white/[0.04]
+            dark:hover:bg-white/[0.06]
+          "
+        >
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Published
+          </p>
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">
-              Published
-            </p>
-
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {publishedCount}
-            </p>
-          </div>
-
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">
-              Total Views
-            </p>
-
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {totalViews.toLocaleString()}
-            </p>
-          </div>
-
+          <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
+            {publishedCount}
+          </p>
         </div>
 
-        {/* Search */}
-        <div className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
-          <div className="relative">
-            <Search
-              size={19}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+        {/* Total Views */}
 
-            <input
-              type="text"
-              placeholder="Search by article, author or category..."
-              value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
-              className="w-full rounded-lg border border-gray-200 py-3 pl-10 pr-4 outline-none focus:border-gray-400"
-            />
-          </div>
+        <div
+          className="
+            rounded-xl
+            border
+            border-gray-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-all
+            hover:-translate-y-1
+            hover:shadow-md
+
+            dark:border-white/10
+            dark:bg-white/[0.04]
+            dark:hover:bg-white/[0.06]
+          "
+        >
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Total Views
+          </p>
+
+          <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
+            {totalViews.toLocaleString()}
+          </p>
         </div>
 
-        {/* Table */}
-        <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
+      </div>
 
-          <div className="border-b px-6 py-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              All Articles
-            </h2>
-          </div>
+      {/* =================================================
+          SEARCH
+      ================================================= */}
 
-          {filteredArticles.length > 0 ? (
-            <div className="overflow-x-auto">
+      <div
+        className="
+          mb-6
+          rounded-xl
+          border
+          border-gray-200
+          bg-white
+          p-4
+          shadow-sm
 
-              <table className="w-full min-w-[900px]">
+          dark:border-white/10
+          dark:bg-white/[0.04]
+        "
+      >
+        <div className="relative">
 
-                <thead>
-                  <tr className="border-b bg-gray-50 text-left">
+          <Search
+            size={19}
+            className="
+              absolute
+              left-3
+              top-1/2
+              -translate-y-1/2
+              text-gray-400
+              dark:text-gray-500
+            "
+          />
 
-                    <th className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      Article
-                    </th>
+          <input
+            type="text"
+            placeholder="Search by article, author or category..."
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
+            className="
+              w-full
+              rounded-lg
+              border
+              border-gray-200
+              bg-white
+              py-3
+              pl-10
+              pr-4
+              text-gray-900
+              outline-none
+              transition
 
-                    <th className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      Author
-                    </th>
+              placeholder:text-gray-400
 
-                    <th className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      Category
-                    </th>
+              focus:border-[#7C3AED]
+              focus:ring-2
+              focus:ring-[#7C3AED]/20
 
-                    <th className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      Views
-                    </th>
+              dark:border-white/10
+              dark:bg-white/[0.03]
+              dark:text-white
+              dark:placeholder:text-gray-500
+              dark:focus:border-[#8B5CF6]
+            "
+          />
 
-                    <th className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      Date
-                    </th>
+        </div>
+      </div>
 
-                    <th className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      Status
-                    </th>
+      {/* =================================================
+          TABLE
+      ================================================= */}
 
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">
-                      Actions
-                    </th>
+      <div
+        className="
+          overflow-hidden
+          rounded-xl
+          border
+          border-gray-200
+          bg-white
+          shadow-sm
+
+          dark:border-white/10
+          dark:bg-[#0b0b0f]
+        "
+      >
+
+        {/* Table Header */}
+
+        <div
+          className="
+            border-b
+            border-gray-200
+            px-6
+            py-4
+
+            dark:border-white/10
+          "
+        >
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            All Articles
+          </h2>
+        </div>
+
+        {filteredArticles.length > 0 ? (
+          <div className="overflow-x-auto">
+
+            <table className="w-full min-w-[900px]">
+
+              {/* =================================================
+                  TABLE HEAD
+              ================================================= */}
+
+              <thead>
+                <tr
+                  className="
+                    border-b
+                    border-gray-200
+                    bg-gray-50
+                    text-left
+
+                    dark:border-white/10
+                    dark:bg-white/[0.03]
+                  "
+                >
+
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Article
+                  </th>
+
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Author
+                  </th>
+
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Category
+                  </th>
+
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Views
+                  </th>
+
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Date
+                  </th>
+
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Status
+                  </th>
+
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Actions
+                  </th>
+
+                </tr>
+              </thead>
+
+              {/* =================================================
+                  TABLE BODY
+              ================================================= */}
+
+              <tbody>
+
+                {filteredArticles.map((article) => (
+                  <tr
+                    key={article.id}
+                    className="
+                      border-b
+                      border-gray-200
+                      last:border-b-0
+
+                      bg-white
+
+                      transition-colors
+                      duration-200
+
+                      hover:bg-gray-50
+
+                      dark:border-white/10
+                      dark:bg-[#0b0b0f]
+
+                      dark:hover:bg-white/[0.06]
+                    "
+                  >
+
+                    {/* ARTICLE */}
+
+                    <td className="px-6 py-5">
+
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {article.title}
+                      </p>
+
+                    </td>
+
+                    {/* AUTHOR */}
+
+                    <td className="px-6 py-5 text-sm text-gray-600 dark:text-gray-300">
+                      {article.author}
+                    </td>
+
+                    {/* CATEGORY */}
+
+                    <td className="px-6 py-5">
+
+                      <span
+                        className="
+                          rounded-full
+                          bg-gray-100
+                          px-3
+                          py-1
+                          text-xs
+                          font-medium
+                          text-gray-700
+
+                          dark:bg-white/10
+                          dark:text-gray-300
+                        "
+                      >
+                        {article.category}
+                      </span>
+
+                    </td>
+
+                    {/* VIEWS */}
+
+                    <td className="px-6 py-5 text-sm text-gray-600 dark:text-gray-300">
+                      {article.views.toLocaleString()}
+                    </td>
+
+                    {/* DATE */}
+
+                    <td className="px-6 py-5 text-sm text-gray-600 dark:text-gray-300">
+                      {article.publishedDate}
+                    </td>
+
+                    {/* STATUS */}
+
+                    <td className="px-6 py-5">
+
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          article.status === "Published"
+                            ? "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400"
+                            : "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-400"
+                        }`}
+                      >
+                        {article.status}
+                      </span>
+
+                    </td>
+
+                    {/* ACTIONS */}
+
+                    <td className="px-6 py-5">
+
+                      <div className="flex justify-end gap-2">
+
+                        {/* VIEW */}
+
+                        <button
+                          type="button"
+                          title="View article"
+                          className="
+                            rounded-lg
+                            border
+                            border-gray-300
+                            bg-white
+                            p-2
+                            text-gray-600
+                            transition
+
+                            hover:bg-gray-100
+                            hover:text-gray-900
+
+                            dark:border-white/20
+                            dark:bg-transparent
+                            dark:text-gray-300
+                            dark:hover:bg-white/10
+                            dark:hover:text-white
+                          "
+                        >
+                          <Eye size={17} />
+                        </button>
+
+                        {/* EDIT */}
+
+                        <button
+                          type="button"
+                          title="Edit article"
+                          className="
+                            rounded-lg
+                            border
+                            border-gray-300
+                            bg-white
+                            p-2
+                            text-gray-600
+                            transition
+
+                            hover:bg-gray-100
+                            hover:text-gray-900
+
+                            dark:border-white/20
+                            dark:bg-transparent
+                            dark:text-gray-300
+                            dark:hover:bg-white/10
+                            dark:hover:text-white
+                          "
+                        >
+                          <Edit size={17} />
+                        </button>
+
+                        {/* PUBLISH / UNPUBLISH */}
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            togglePublish(article.id)
+                          }
+                          className="
+                            rounded-lg
+                            border
+                            border-gray-300
+                            bg-white
+                            px-3
+                            py-2
+                            text-xs
+                            font-medium
+                            text-gray-700
+                            transition
+
+                            hover:bg-gray-100
+                            hover:text-gray-900
+
+                            dark:border-white/20
+                            dark:bg-transparent
+                            dark:text-gray-300
+                            dark:hover:bg-white/10
+                            dark:hover:text-white
+                          "
+                        >
+                          {article.status === "Published"
+                            ? "Unpublish"
+                            : "Publish"}
+                        </button>
+
+                        {/* DELETE */}
+
+                        <button
+                          type="button"
+                          title="Delete article"
+                          onClick={() =>
+                            deleteArticle(article.id)
+                          }
+                          className="
+                            rounded-lg
+                            border
+                            border-red-300
+                            bg-white
+                            p-2
+                            text-red-500
+                            transition
+
+                            hover:bg-red-50
+                            hover:text-red-600
+
+                            dark:border-red-500/40
+                            dark:bg-transparent
+                            dark:text-red-400
+                            dark:hover:bg-red-500/10
+                            dark:hover:text-red-300
+                          "
+                        >
+                          <Trash2 size={17} />
+                        </button>
+
+                      </div>
+
+                    </td>
 
                   </tr>
-                </thead>
+                ))}
 
-                <tbody>
+              </tbody>
 
-                  {filteredArticles.map((article) => (
-                    <tr
-                      key={article.id}
-                      className="border-b last:border-b-0 hover:bg-gray-50"
-                    >
+            </table>
 
-                      <td className="px-6 py-5">
-                        <p className="font-medium text-gray-900">
-                          {article.title}
-                        </p>
-                      </td>
+          </div>
+        ) : (
 
-                      <td className="px-6 py-5 text-sm text-gray-600">
-                        {article.author}
-                      </td>
+          /* =================================================
+              NO ARTICLES
+          ================================================= */
 
-                      <td className="px-6 py-5">
-                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-                          {article.category}
-                        </span>
-                      </td>
+          <div className="p-12 text-center">
 
-                      <td className="px-6 py-5 text-sm text-gray-600">
-                        {article.views.toLocaleString()}
-                      </td>
+            <FileText
+              size={45}
+              className="mx-auto mb-4 text-gray-300 dark:text-gray-600"
+            />
 
-                      <td className="px-6 py-5 text-sm text-gray-600">
-                        {article.publishedDate}
-                      </td>
+            <h2 className="font-semibold text-gray-800 dark:text-white">
+              No articles found
+            </h2>
 
-                      <td className="px-6 py-5">
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Try a different search.
+            </p>
 
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-medium ${
-                            article.status === "Published"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {article.status}
-                        </span>
+          </div>
+        )}
 
-                      </td>
-
-                      <td className="px-6 py-5">
-
-                        <div className="flex justify-end gap-2">
-
-                          {/* View */}
-                          <button
-                            title="View article"
-                            className="rounded-lg border p-2 text-gray-600 hover:bg-gray-100"
-                          >
-                            <Eye size={17} />
-                          </button>
-
-                          {/* Edit */}
-                          <button
-                            title="Edit article"
-                            className="rounded-lg border p-2 text-gray-600 hover:bg-gray-100"
-                          >
-                            <Edit size={17} />
-                          </button>
-
-                          {/* Publish / Unpublish */}
-                          <button
-                            onClick={() =>
-                              togglePublish(article.id)
-                            }
-                            className="rounded-lg border px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-100"
-                          >
-                            {article.status === "Published"
-                              ? "Unpublish"
-                              : "Publish"}
-                          </button>
-
-                          {/* Delete */}
-                          <button
-                            title="Delete article"
-                            onClick={() =>
-                              deleteArticle(article.id)
-                            }
-                            className="rounded-lg border p-2 text-red-500 hover:bg-red-50"
-                          >
-                            <Trash2 size={17} />
-                          </button>
-
-                        </div>
-
-                      </td>
-                    </tr>
-                  ))}
-
-                </tbody>
-
-              </table>
-
-            </div>
-          ) : (
-            <div className="p-12 text-center">
-
-              <FileText
-                size={45}
-                className="mx-auto mb-4 text-gray-300"
-              />
-
-              <h2 className="font-semibold text-gray-800">
-                No articles found
-              </h2>
-
-              <p className="mt-2 text-sm text-gray-500">
-                Try a different search.
-              </p>
-
-            </div>
-          )}
-
-        </div>
       </div>
     </div>
   );

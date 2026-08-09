@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
 
 const categories = [
@@ -11,16 +12,8 @@ const categories = [
 
 export default function CategorySection() {
   return (
-    <section
-      className="
-        ph-section
-        px-6
-        py-20
-        sm:px-10
-        lg:px-16
-      "
-    >
-      <div className="mx-auto max-w-7xl">
+    <section className="py-16">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
 
         {/* =================================================
             HEADING
@@ -46,9 +39,7 @@ export default function CategorySection() {
               font-bold
               tracking-tight
               text-slate-900
-
               sm:text-4xl
-
               dark:text-white
             "
           >
@@ -63,7 +54,6 @@ export default function CategorySection() {
               text-base
               leading-7
               text-slate-600
-
               dark:text-slate-400
             "
           >
@@ -76,50 +66,32 @@ export default function CategorySection() {
             SEARCH BAR
         ================================================= */}
 
-        <div
-          className="
-            mb-10
-            max-w-2xl
-          "
-        >
+        <div className="mb-10 max-w-2xl">
           <SearchBar />
         </div>
 
         {/* =================================================
-            CATEGORIES
+            CATEGORY BUTTONS
         ================================================= */}
 
-        <div
-          className="
-            flex
-            flex-wrap
-            gap-3
-          "
-        >
+        <div className="flex flex-wrap gap-3">
           {categories.map((category) => (
-            <button
+            <Link
               key={category}
-              type="button"
+              href={`/articles?category=${encodeURIComponent(category)}`}
               className="
                 rounded-full
-
                 border
                 border-gray-200
-
                 bg-white
-
                 px-6
                 py-3
-
                 text-sm
                 font-semibold
                 text-gray-700
-
                 shadow-sm
-
                 transition-all
                 duration-300
-
                 hover:-translate-y-0.5
                 hover:border-[#7C3AED]
                 hover:bg-[#7C3AED]
@@ -137,12 +109,12 @@ export default function CategorySection() {
               "
             >
               {category}
-            </button>
+            </Link>
           ))}
         </div>
 
         {/* =================================================
-            CATEGORY PREVIEW CARD
+            CATEGORY PREVIEW CARDS
         ================================================= */}
 
         <div
@@ -150,20 +122,34 @@ export default function CategorySection() {
             mt-12
             grid
             gap-4
-
             sm:grid-cols-2
             lg:grid-cols-3
           "
         >
           {categories.slice(0, 3).map((category, index) => (
-            <div
+            <Link
               key={category}
+              href={`/articles?category=${encodeURIComponent(category)}`}
               className="
                 ph-card
                 group
                 relative
+                block
                 overflow-hidden
                 p-6
+
+                transition-all
+                duration-300
+
+                hover:-translate-y-1
+                hover:shadow-xl
+
+                focus:outline-none
+                focus:ring-2
+                focus:ring-[#7C3AED]
+                focus:ring-offset-2
+
+                dark:focus:ring-offset-[#0b0b0f]
               "
             >
               {/* Glow */}
@@ -187,12 +173,8 @@ export default function CategorySection() {
                 "
               />
 
-              <div
-                className="
-                  relative
-                  z-10
-                "
-              >
+              <div className="relative z-10">
+
                 {/* Number */}
 
                 <span
@@ -200,6 +182,7 @@ export default function CategorySection() {
                     text-sm
                     font-semibold
                     text-[#7C3AED]
+                    dark:text-[#A78BFA]
                   "
                 >
                   0{index + 1}
@@ -213,8 +196,13 @@ export default function CategorySection() {
                     text-xl
                     font-bold
                     text-slate-900
+                    transition-colors
+                    duration-300
+
+                    group-hover:text-[#7C3AED]
 
                     dark:text-white
+                    dark:group-hover:text-[#A78BFA]
                   "
                 >
                   {category}
@@ -252,8 +240,37 @@ export default function CategorySection() {
                     group-hover:w-20
                   "
                 />
+
+                {/* View category */}
+
+                <div
+                  className="
+                    mt-5
+                    flex
+                    items-center
+                    gap-2
+                    text-sm
+                    font-semibold
+                    text-[#7C3AED]
+
+                    dark:text-[#A78BFA]
+                  "
+                >
+                  Explore {category}
+
+                  <span
+                    className="
+                      transition-transform
+                      duration-300
+                      group-hover:translate-x-1
+                    "
+                  >
+                    →
+                  </span>
+                </div>
+
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

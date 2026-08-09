@@ -109,28 +109,46 @@ export default function EditArticlePage() {
 
   if (!article) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f8f8f6] px-6">
-        <div className="text-center">
+      <main className="min-h-screen bg-white text-slate-900 transition-colors dark:bg-[#0f0f12] dark:text-white">
+        <div className="mx-auto max-w-5xl px-5 py-16 md:px-8">
 
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#7C3AED]">
             404
           </p>
 
-          <h1 className="mt-3 text-3xl font-bold">
+          <h1 className="mt-3 text-3xl font-bold text-slate-900 dark:text-white">
             Article Not Found
           </h1>
 
-          <p className="mt-3 text-gray-500">
+          <p className="mt-3 text-gray-500 dark:text-gray-400">
             The article you are trying to edit does not exist.
           </p>
 
-          <p className="mt-2 text-sm text-gray-400">
+          <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
             Article ID: {id}
           </p>
 
           <Link
             href="/dashboard/articles"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
+            className="
+              mt-6
+              inline-flex
+              items-center
+              gap-2
+              rounded-full
+              bg-black
+              px-6
+              py-3
+              text-sm
+              font-medium
+              text-white
+              transition
+              hover:bg-[#7C3AED]
+              dark:bg-white
+              dark:text-black
+              dark:hover:bg-[#7C3AED]
+              dark:hover:text-white
+            "
           >
             <ArrowLeft size={16} />
             Back to My Articles
@@ -150,83 +168,213 @@ export default function EditArticlePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f8f8f6]">
+    <main className="min-h-screen bg-white text-slate-900 transition-colors dark:bg-[#0f0f12] dark:text-white">
 
-      {/* HEADER */}
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-      <header className="border-b border-black/10 bg-white">
-
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
+      <header
+        className="
+          border-b
+          border-black/10
+          bg-white
+          transition-colors
+          dark:border-white/10
+          dark:bg-[#0b0b0e]
+        "
+      >
+        <div
+          className="
+            mx-auto
+            flex
+            max-w-7xl
+            items-center
+            justify-between
+            px-5
+            py-4
+            md:px-8
+          "
+        >
 
           <Link
             href="/"
-            className="text-2xl font-bold"
+            className="
+              text-2xl
+              font-bold
+              text-slate-900
+              dark:text-white
+            "
           >
             Publish
-            <span className="text-blue-600">
+            <span className="text-[#7C3AED]">
               Hub
             </span>
           </Link>
 
           <Link
             href="/dashboard/articles"
-            className="text-sm text-gray-500 transition hover:text-black"
+            className="
+              text-sm
+              text-gray-500
+              transition
+              hover:text-[#7C3AED]
+              dark:text-gray-300
+              dark:hover:text-[#8B5CF6]
+            "
           >
             My Articles
           </Link>
 
         </div>
-
       </header>
 
 
-      {/* PAGE */}
+      {/* =====================================================
+          PAGE
+      ===================================================== */}
 
-      <div className="mx-auto max-w-5xl px-5 py-8 md:px-8">
+      <div
+        className="
+          mx-auto
+          max-w-5xl
+          px-5
+          py-8
+          md:px-8
+        "
+      >
 
-        {/* TOP */}
+        {/* =================================================
+            TOP SECTION
+        ================================================= */}
 
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+        <div
+          className="
+            flex
+            flex-col
+            justify-between
+            gap-5
+            md:flex-row
+            md:items-center
+          "
+        >
 
           <div>
 
+            {/* BACK */}
             <Link
               href="/dashboard/articles"
-              className="flex w-fit items-center gap-2 text-sm text-gray-500 transition hover:text-black"
+              className="
+                flex
+                w-fit
+                items-center
+                gap-2
+                text-sm
+                text-gray-500
+                transition
+                hover:text-[#7C3AED]
+                dark:text-gray-400
+                dark:hover:text-[#8B5CF6]
+              "
             >
               <ArrowLeft size={16} />
               Back to My Articles
             </Link>
 
-            <h1 className="mt-4 text-3xl font-bold">
+
+            {/* HEADING */}
+
+            <h1
+              className="
+                mt-4
+                text-3xl
+                font-bold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Edit Article
             </h1>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p
+              className="
+                mt-2
+                text-sm
+                text-gray-500
+                dark:text-gray-400
+              "
+            >
               Update your article and save your changes.
             </p>
 
           </div>
 
 
-          {/* TOP ACTIONS */}
+          {/* =================================================
+              TOP ACTIONS
+          ================================================= */}
 
           <div className="flex gap-3">
 
-            {/* IMPORTANT: /articles/${id} */}
+            {/* Preview */}
 
             <Link
               href={`/articles/${id}`}
-              className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-medium transition hover:bg-gray-100"
+              className="
+                flex
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-black/10
+                bg-white
+                px-5
+                py-3
+                text-sm
+                font-medium
+                text-slate-800
+                transition
+                hover:border-[#7C3AED]
+                hover:bg-purple-50
+                hover:text-[#7C3AED]
+
+                dark:border-white/10
+                dark:bg-[#151519]
+                dark:text-white
+                dark:hover:border-[#7C3AED]
+                dark:hover:bg-[#7C3AED]
+                dark:hover:text-white
+              "
             >
               <Eye size={17} />
               Preview
             </Link>
 
+
+            {/* Save */}
+
             <button
               type="button"
               onClick={handleSave}
-              className="flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
+              className="
+                flex
+                items-center
+                gap-2
+                rounded-full
+                bg-black
+                px-5
+                py-3
+                text-sm
+                font-medium
+                text-white
+                transition
+                hover:bg-[#7C3AED]
+
+                dark:bg-white
+                dark:text-black
+                dark:hover:bg-[#7C3AED]
+                dark:hover:text-white
+              "
             >
               <Save size={17} />
 
@@ -240,16 +388,39 @@ export default function EditArticlePage() {
         </div>
 
 
-        {/* FORM */}
+        {/* =====================================================
+            FORM
+        ===================================================== */}
 
         <div className="mt-8 space-y-6">
 
 
-          {/* TITLE */}
+          {/* =================================================
+              TITLE
+          ================================================= */}
 
-          <section className="rounded-2xl border border-black/5 bg-white p-6">
+          <section
+            className="
+              rounded-2xl
+              border
+              border-black/5
+              bg-white
+              p-6
+              shadow-sm
 
-            <label className="text-sm font-semibold">
+              dark:border-white/10
+              dark:bg-[#151519]
+            "
+          >
+
+            <label
+              className="
+                text-sm
+                font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Article Title
             </label>
 
@@ -258,18 +429,60 @@ export default function EditArticlePage() {
               onChange={(e) =>
                 setTitle(e.target.value)
               }
-              className="mt-3 w-full rounded-xl border border-black/10 px-4 py-3 text-lg outline-none transition focus:border-blue-500"
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-black/10
+                bg-white
+                px-4
+                py-3
+                text-lg
+                text-slate-900
+                outline-none
+                transition
+                placeholder:text-gray-400
+                focus:border-[#7C3AED]
+
+                dark:border-white/10
+                dark:bg-[#101014]
+                dark:text-white
+                dark:placeholder:text-gray-500
+                dark:focus:border-[#8B5CF6]
+              "
               placeholder="Enter article title"
             />
 
           </section>
 
 
-          {/* CATEGORY */}
+          {/* =================================================
+              CATEGORY
+          ================================================= */}
 
-          <section className="rounded-2xl border border-black/5 bg-white p-6">
+          <section
+            className="
+              rounded-2xl
+              border
+              border-black/5
+              bg-white
+              p-6
+              shadow-sm
 
-            <label className="text-sm font-semibold">
+              dark:border-white/10
+              dark:bg-[#151519]
+            "
+          >
+
+            <label
+              className="
+                text-sm
+                font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Category
             </label>
 
@@ -278,30 +491,66 @@ export default function EditArticlePage() {
               onChange={(e) =>
                 setCategory(e.target.value)
               }
-              className="mt-3 w-full rounded-xl border border-black/10 bg-white px-4 py-3 outline-none transition focus:border-blue-500"
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-black/10
+                bg-white
+                px-4
+                py-3
+                text-slate-900
+                outline-none
+                transition
+                focus:border-[#7C3AED]
+
+                dark:border-white/10
+                dark:bg-[#101014]
+                dark:text-white
+                dark:focus:border-[#8B5CF6]
+              "
             >
 
-              <option value="Technology">
+              <option
+                value="Technology"
+                className="bg-white text-black dark:bg-[#101014] dark:text-white"
+              >
                 Technology
               </option>
 
-              <option value="AI">
+              <option
+                value="AI"
+                className="bg-white text-black dark:bg-[#101014] dark:text-white"
+              >
                 AI
               </option>
 
-              <option value="Development">
+              <option
+                value="Development"
+                className="bg-white text-black dark:bg-[#101014] dark:text-white"
+              >
                 Development
               </option>
 
-              <option value="Design">
+              <option
+                value="Design"
+                className="bg-white text-black dark:bg-[#101014] dark:text-white"
+              >
                 Design
               </option>
 
-              <option value="Research">
+              <option
+                value="Research"
+                className="bg-white text-black dark:bg-[#101014] dark:text-white"
+              >
                 Research
               </option>
 
-              <option value="Education">
+              <option
+                value="Education"
+                className="bg-white text-black dark:bg-[#101014] dark:text-white"
+              >
                 Education
               </option>
 
@@ -310,11 +559,32 @@ export default function EditArticlePage() {
           </section>
 
 
-          {/* DESCRIPTION */}
+          {/* =================================================
+              DESCRIPTION
+          ================================================= */}
 
-          <section className="rounded-2xl border border-black/5 bg-white p-6">
+          <section
+            className="
+              rounded-2xl
+              border
+              border-black/5
+              bg-white
+              p-6
+              shadow-sm
 
-            <label className="text-sm font-semibold">
+              dark:border-white/10
+              dark:bg-[#151519]
+            "
+          >
+
+            <label
+              className="
+                text-sm
+                font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Short Description
             </label>
 
@@ -324,22 +594,69 @@ export default function EditArticlePage() {
                 setDescription(e.target.value)
               }
               rows={3}
-              className="mt-3 w-full resize-none rounded-xl border border-black/10 px-4 py-3 text-sm leading-6 outline-none transition focus:border-blue-500"
+              className="
+                mt-3
+                w-full
+                resize-none
+                rounded-xl
+                border
+                border-black/10
+                bg-white
+                px-4
+                py-3
+                text-sm
+                leading-6
+                text-slate-900
+                outline-none
+                transition
+                placeholder:text-gray-400
+                focus:border-[#7C3AED]
+
+                dark:border-white/10
+                dark:bg-[#101014]
+                dark:text-white
+                dark:placeholder:text-gray-500
+                dark:focus:border-[#8B5CF6]
+              "
               placeholder="Write a short description..."
             />
 
           </section>
 
 
-          {/* IMAGE */}
+          {/* =================================================
+              IMAGE
+          ================================================= */}
 
-          <section className="rounded-2xl border border-black/5 bg-white p-6">
+          <section
+            className="
+              rounded-2xl
+              border
+              border-black/5
+              bg-white
+              p-6
+              shadow-sm
+
+              dark:border-white/10
+              dark:bg-[#151519]
+            "
+          >
 
             <div className="flex items-center gap-2">
 
-              <ImageIcon size={18} />
+              <ImageIcon
+                size={18}
+                className="text-slate-700 dark:text-gray-300"
+              />
 
-              <label className="text-sm font-semibold">
+              <label
+                className="
+                  text-sm
+                  font-semibold
+                  text-slate-900
+                  dark:text-white
+                "
+              >
                 Cover Image URL
               </label>
 
@@ -350,7 +667,28 @@ export default function EditArticlePage() {
               onChange={(e) =>
                 setImage(e.target.value)
               }
-              className="mt-3 w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-black/10
+                bg-white
+                px-4
+                py-3
+                text-sm
+                text-slate-900
+                outline-none
+                transition
+                placeholder:text-gray-400
+                focus:border-[#7C3AED]
+
+                dark:border-white/10
+                dark:bg-[#101014]
+                dark:text-white
+                dark:placeholder:text-gray-500
+                dark:focus:border-[#8B5CF6]
+              "
               placeholder="https://..."
             />
 
@@ -358,18 +696,45 @@ export default function EditArticlePage() {
               <img
                 src={image}
                 alt="Article cover"
-                className="mt-5 h-64 w-full rounded-xl object-cover"
+                className="
+                  mt-5
+                  h-64
+                  w-full
+                  rounded-xl
+                  object-cover
+                "
               />
             )}
 
           </section>
 
 
-          {/* CONTENT */}
+          {/* =================================================
+              CONTENT
+          ================================================= */}
 
-          <section className="rounded-2xl border border-black/5 bg-white p-6">
+          <section
+            className="
+              rounded-2xl
+              border
+              border-black/5
+              bg-white
+              p-6
+              shadow-sm
 
-            <label className="text-sm font-semibold">
+              dark:border-white/10
+              dark:bg-[#151519]
+            "
+          >
+
+            <label
+              className="
+                text-sm
+                font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Article Content
             </label>
 
@@ -379,32 +744,111 @@ export default function EditArticlePage() {
                 setContent(e.target.value)
               }
               rows={18}
-              className="mt-3 w-full resize-y rounded-xl border border-black/10 px-4 py-4 text-base leading-8 outline-none transition focus:border-blue-500"
+              className="
+                mt-3
+                w-full
+                resize-y
+                rounded-xl
+                border
+                border-black/10
+                bg-white
+                px-4
+                py-4
+                text-base
+                leading-8
+                text-slate-900
+                outline-none
+                transition
+                placeholder:text-gray-400
+                focus:border-[#7C3AED]
+
+                dark:border-white/10
+                dark:bg-[#101014]
+                dark:text-white
+                dark:placeholder:text-gray-500
+                dark:focus:border-[#8B5CF6]
+              "
               placeholder="Write your article..."
             />
 
-            <p className="mt-3 text-xs text-gray-400">
+            <p
+              className="
+                mt-3
+                text-xs
+                text-gray-400
+                dark:text-gray-500
+              "
+            >
               Separate paragraphs with a blank line.
             </p>
 
           </section>
 
 
-          {/* SAVE */}
+          {/* =================================================
+              BOTTOM SAVE
+          ================================================= */}
 
-          <div className="flex justify-end gap-3 pb-10">
+          <div
+            className="
+              flex
+              justify-end
+              gap-3
+              pb-10
+            "
+          >
+
+            {/* Cancel */}
 
             <Link
               href="/dashboard/articles"
-              className="rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-medium transition hover:bg-gray-100"
+              className="
+                rounded-full
+                border
+                border-black/10
+                bg-white
+                px-6
+                py-3
+                text-sm
+                font-medium
+                text-slate-800
+                transition
+                hover:bg-gray-100
+
+                dark:border-white/10
+                dark:bg-[#151519]
+                dark:text-white
+                dark:hover:bg-white/10
+              "
             >
               Cancel
             </Link>
 
+
+            {/* Save */}
+
             <button
               type="button"
               onClick={handleSave}
-              className="flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
+              className="
+                flex
+                items-center
+                gap-2
+                rounded-full
+                bg-black
+                px-6
+                py-3
+                text-sm
+                font-medium
+                text-white
+                transition
+                hover:bg-[#7C3AED]
+
+                dark:bg-white
+                dark:text-black
+                dark:hover:bg-[#7C3AED]
+                dark:hover:text-white
+              "
             >
 
               <Save size={17} />

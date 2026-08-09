@@ -2,7 +2,7 @@ import Hero from "@/components/Hero";
 import CategorySection from "@/components/CategorySection";
 import FeaturedArticle from "@/components/FeaturedArticle";
 import ArticleCard from "@/components/ArticleCard";
-import TopAuthors from "@/components/TopAuthors";
+//import TopAuthors from "@/components/TopAuthors";
 import AuthPrompt from "@/components/AuthPrompt";
 import { articles } from "@/data/articles";
 
@@ -96,9 +96,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Authors */}
+      {/* Authors 
       <section className="ph-section">
-        <TopAuthors />
+        //<TopAuthors />
       </section>
 
       {/* Authentication prompt */}
