@@ -1,84 +1,54 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Users,
-  Search,
-  Eye,
-  Edit,
-  Trash2,
-  UserCheck,
-  UserX,
-} from "lucide-react";
+import { Search, Users, Eye, Trash2 } from "lucide-react";
 
 interface Author {
   id: number;
   name: string;
+  username: string;
   email: string;
-  role: "Author" | "Editor";
   articles: number;
-  followers: number;
-  joined: string;
-  status: "Active" | "Inactive";
+  status: "Active" | "Blocked";
 }
 
 const initialAuthors: Author[] = [
   {
     id: 1,
     name: "Rahul Sharma",
+    username: "rahul",
     email: "rahul@example.com",
-    role: "Author",
-    articles: 18,
-    followers: 1240,
-    joined: "Jan 12, 2026",
+    articles: 12,
     status: "Active",
   },
   {
     id: 2,
     name: "Ananya Reddy",
+    username: "ananya",
     email: "ananya@example.com",
-    role: "Editor",
-    articles: 24,
-    followers: 2180,
-    joined: "Feb 5, 2026",
+    articles: 8,
     status: "Active",
   },
   {
     id: 3,
     name: "Arjun Kumar",
+    username: "arjun",
     email: "arjun@example.com",
-    role: "Author",
-    articles: 12,
-    followers: 850,
-    joined: "Mar 18, 2026",
+    articles: 15,
     status: "Active",
   },
   {
     id: 4,
     name: "Sneha Patel",
+    username: "sneha",
     email: "sneha@example.com",
-    role: "Author",
-    articles: 9,
-    followers: 620,
-    joined: "Apr 2, 2026",
-    status: "Inactive",
-  },
-  {
-    id: 5,
-    name: "Vikram Singh",
-    email: "vikram@example.com",
-    role: "Author",
-    articles: 15,
-    followers: 970,
-    joined: "May 10, 2026",
-    status: "Active",
+    articles: 6,
+    status: "Blocked",
   },
 ];
 
 export default function AdminAuthorsPage() {
-  const [authors, setAuthors] =
-    useState<Author[]>(initialAuthors);
-
+  const [authors, setAuthors] = useState(initialAuthors);
   const [search, setSearch] = useState("");
 
   const toggleStatus = (id: number) => {
@@ -89,7 +59,7 @@ export default function AdminAuthorsPage() {
               ...author,
               status:
                 author.status === "Active"
-                  ? "Inactive"
+                  ? "Blocked"
                   : "Active",
             }
           : author
@@ -114,10 +84,10 @@ export default function AdminAuthorsPage() {
       author.name
         .toLowerCase()
         .includes(search.toLowerCase()) ||
-      author.email
+      author.username
         .toLowerCase()
         .includes(search.toLowerCase()) ||
-      author.role
+      author.email
         .toLowerCase()
         .includes(search.toLowerCase())
   );
@@ -131,308 +101,118 @@ export default function AdminAuthorsPage() {
     0
   );
 
-  const totalFollowers = authors.reduce(
-    (total, author) => total + author.followers,
-    0
-  );
-
   return (
-    <div className="min-h-screen bg-white text-slate-900 transition-colors dark:bg-[#0b0b0f] dark:text-white">
+    <div className="min-h-screen bg-[#F8F7F4] p-6 md:p-8">
+      <div className="mx-auto max-w-7xl">
 
-      {/* =================================================
-          HEADER
-      ================================================= */}
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <Users size={28} />
 
-      <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Authors
+            </h1>
+          </div>
 
-        <div className="flex items-center gap-3">
+          <p className="mt-2 text-gray-500">
+            Manage authors and their publication activity.
+          </p>
+        </div>
 
-          <Users
-            size={28}
-            className="text-gray-800 dark:text-white"
-          />
+        {/* Stats */}
+        <div className="mb-6 grid gap-4 md:grid-cols-3">
 
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Authors Management
-          </h1>
+          <div className="rounded-xl border bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">
+              Total Authors
+            </p>
+
+            <p className="mt-1 text-3xl font-bold">
+              {authors.length}
+            </p>
+          </div>
+
+          <div className="rounded-xl border bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">
+              Active Authors
+            </p>
+
+            <p className="mt-1 text-3xl font-bold">
+              {activeAuthors}
+            </p>
+          </div>
+
+          <div className="rounded-xl border bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">
+              Total Articles
+            </p>
+
+            <p className="mt-1 text-3xl font-bold">
+              {totalArticles}
+            </p>
+          </div>
 
         </div>
 
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
-          Manage authors, editors and their publication access.
-        </p>
+        {/* Search */}
+        <div className="mb-6 rounded-xl border bg-white p-4 shadow-sm">
+          <div className="relative">
 
-      </div>
+            <Search
+              size={19}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
 
-      {/* =================================================
-          STATISTICS
-      ================================================= */}
+            <input
+              type="text"
+              placeholder="Search authors..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 py-3 pl-10 pr-4 outline-none focus:border-gray-400"
+            />
 
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-
-        {/* Total Authors */}
-
-        <div
-          className="
-            rounded-xl
-            border
-            border-gray-200
-            bg-white
-            p-5
-            shadow-sm
-            transition-all
-            hover:-translate-y-1
-            hover:shadow-md
-
-            dark:border-white/10
-            dark:bg-white/[0.04]
-            dark:hover:bg-white/[0.06]
-          "
-        >
-
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Total Authors
-          </p>
-
-          <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
-            {authors.length}
-          </p>
-
+          </div>
         </div>
 
-        {/* Active Authors */}
+        {/* Authors Table */}
+        <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
 
-        <div
-          className="
-            rounded-xl
-            border
-            border-gray-200
-            bg-white
-            p-5
-            shadow-sm
-            transition-all
-            hover:-translate-y-1
-            hover:shadow-md
-
-            dark:border-white/10
-            dark:bg-white/[0.04]
-            dark:hover:bg-white/[0.06]
-          "
-        >
-
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Active Authors
-          </p>
-
-          <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
-            {activeAuthors}
-          </p>
-
-        </div>
-
-        {/* Total Followers */}
-
-        <div
-          className="
-            rounded-xl
-            border
-            border-gray-200
-            bg-white
-            p-5
-            shadow-sm
-            transition-all
-            hover:-translate-y-1
-            hover:shadow-md
-
-            dark:border-white/10
-            dark:bg-white/[0.04]
-            dark:hover:bg-white/[0.06]
-          "
-        >
-
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Total Followers
-          </p>
-
-          <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
-            {totalFollowers.toLocaleString()}
-          </p>
-
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            {totalArticles} articles published
-          </p>
-
-        </div>
-
-      </div>
-
-      {/* =================================================
-          SEARCH
-      ================================================= */}
-
-      <div
-        className="
-          mb-6
-          rounded-xl
-          border
-          border-gray-200
-          bg-white
-          p-4
-          shadow-sm
-
-          dark:border-white/10
-          dark:bg-white/[0.04]
-        "
-      >
-
-        <div className="relative">
-
-          <Search
-            size={19}
-            className="
-              absolute
-              left-3
-              top-1/2
-              -translate-y-1/2
-              text-gray-400
-              dark:text-gray-500
-            "
-          />
-
-          <input
-            type="text"
-            placeholder="Search authors by name, email or role..."
-            value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
-            className="
-              w-full
-              rounded-lg
-              border
-              border-gray-200
-              bg-white
-              py-3
-              pl-10
-              pr-4
-              text-gray-900
-              outline-none
-              transition
-
-              placeholder:text-gray-400
-
-              focus:border-[#7C3AED]
-              focus:ring-2
-              focus:ring-[#7C3AED]/20
-
-              dark:border-white/10
-              dark:bg-white/[0.03]
-              dark:text-white
-              dark:placeholder:text-gray-500
-              dark:focus:border-[#8B5CF6]
-            "
-          />
-
-        </div>
-
-      </div>
-
-      {/* =================================================
-          AUTHORS TABLE
-      ================================================= */}
-
-      <div
-        className="
-          overflow-hidden
-          rounded-xl
-          border
-          border-gray-200
-          bg-white
-          shadow-sm
-
-          dark:border-white/10
-          dark:bg-[#0b0b0f]
-        "
-      >
-
-        {/* Table Title */}
-
-        <div
-          className="
-            border-b
-            border-gray-200
-            px-6
-            py-4
-
-            dark:border-white/10
-          "
-        >
-
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            All Authors
-          </h2>
-
-        </div>
-
-        {filteredAuthors.length > 0 ? (
+          <div className="border-b px-6 py-4">
+            <h2 className="text-lg font-semibold">
+              All Authors
+            </h2>
+          </div>
 
           <div className="overflow-x-auto">
 
-            <table className="w-full min-w-[1000px]">
-
-              {/* =================================================
-                  TABLE HEADER
-              ================================================= */}
+            <table className="w-full min-w-[800px]">
 
               <thead>
+                <tr className="border-b bg-gray-50 text-left">
 
-                <tr
-                  className="
-                    border-b
-                    border-gray-200
-                    bg-gray-50
-                    text-left
-
-                    dark:border-white/10
-                    dark:bg-white/[0.03]
-                  "
-                >
-
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <th className="px-6 py-4 text-sm">
                     Author
                   </th>
 
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Role
+                  <th className="px-6 py-4 text-sm">
+                    Email
                   </th>
 
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <th className="px-6 py-4 text-sm">
                     Articles
                   </th>
 
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Followers
-                  </th>
-
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Joined
-                  </th>
-
-                  <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <th className="px-6 py-4 text-sm">
                     Status
                   </th>
 
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <th className="px-6 py-4 text-right text-sm">
                     Actions
                   </th>
 
                 </tr>
-
               </thead>
-
-              {/* =================================================
-                  TABLE BODY
-              ================================================= */}
 
               <tbody>
 
@@ -440,280 +220,80 @@ export default function AdminAuthorsPage() {
 
                   <tr
                     key={author.id}
-                    className="
-                      border-b
-                      border-gray-200
-                      last:border-b-0
-
-                      bg-white
-
-                      transition-colors
-                      duration-200
-
-                      hover:bg-gray-50
-
-                      dark:border-white/10
-                      dark:bg-[#0b0b0f]
-
-                      dark:hover:bg-white/[0.06]
-                    "
+                    className="border-b last:border-b-0 hover:bg-gray-50"
                   >
-
-                    {/* =================================================
-                        AUTHOR
-                    ================================================= */}
 
                     <td className="px-6 py-5">
 
                       <div className="flex items-center gap-3">
 
-                        <div
-                          className="
-                            flex
-                            h-11
-                            w-11
-                            items-center
-                            justify-center
-                            rounded-full
-                            bg-gray-900
-                            text-sm
-                            font-bold
-                            text-white
-
-                            dark:bg-white
-                            dark:text-gray-900
-                          "
-                        >
-                          {author.name
-                            .split(" ")
-                            .map((name) => name[0])
-                            .join("")}
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600">
+                          {author.name.charAt(0)}
                         </div>
 
                         <div>
-
-                          <p className="font-semibold text-gray-900 dark:text-white">
+                          <p className="font-medium">
                             {author.name}
                           </p>
 
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {author.email}
+                          <p className="text-xs text-gray-400">
+                            @{author.username}
                           </p>
-
                         </div>
 
                       </div>
 
                     </td>
 
-                    {/* =================================================
-                        ROLE
-                    ================================================= */}
-
-                    <td className="px-6 py-5">
-
-                      <span
-                        className={`
-                          rounded-full
-                          px-3
-                          py-1
-                          text-xs
-                          font-medium
-
-                          ${
-                            author.role === "Editor"
-                              ? "bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400"
-                              : "bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300"
-                          }
-                        `}
-                      >
-                        {author.role}
-                      </span>
-
+                    <td className="px-6 py-5 text-sm text-gray-600">
+                      {author.email}
                     </td>
 
-                    {/* ARTICLES */}
-
-                    <td className="px-6 py-5 text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-5 text-sm">
                       {author.articles}
                     </td>
 
-                    {/* FOLLOWERS */}
-
-                    <td className="px-6 py-5 text-sm text-gray-600 dark:text-gray-300">
-                      {author.followers.toLocaleString()}
-                    </td>
-
-                    {/* JOINED */}
-
-                    <td className="px-6 py-5 text-sm text-gray-600 dark:text-gray-300">
-                      {author.joined}
-                    </td>
-
-                    {/* STATUS */}
-
                     <td className="px-6 py-5">
 
                       <span
-                        className={`
-                          rounded-full
-                          px-3
-                          py-1
-                          text-xs
-                          font-medium
-
-                          ${
-                            author.status === "Active"
-                              ? "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400"
-                              : "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400"
-                          }
-                        `}
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          author.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                       >
                         {author.status}
                       </span>
 
                     </td>
 
-                    {/* =================================================
-                        ACTIONS
-                    ================================================= */}
-
                     <td className="px-6 py-5">
 
                       <div className="flex justify-end gap-2">
 
-                        {/* VIEW */}
-
                         <button
-                          type="button"
                           title="View author"
-                          className="
-                            rounded-lg
-                            border
-                            border-gray-300
-                            bg-white
-                            p-2
-                            text-gray-600
-                            transition
-
-                            hover:bg-gray-100
-                            hover:text-gray-900
-
-                            dark:border-white/20
-                            dark:bg-transparent
-                            dark:text-gray-300
-                            dark:hover:bg-white/10
-                            dark:hover:text-white
-                          "
+                          className="rounded-lg border p-2 hover:bg-gray-100"
                         >
                           <Eye size={17} />
                         </button>
 
-                        {/* EDIT */}
-
                         <button
-                          type="button"
-                          title="Edit author"
-                          className="
-                            rounded-lg
-                            border
-                            border-gray-300
-                            bg-white
-                            p-2
-                            text-gray-600
-                            transition
-
-                            hover:bg-gray-100
-                            hover:text-gray-900
-
-                            dark:border-white/20
-                            dark:bg-transparent
-                            dark:text-gray-300
-                            dark:hover:bg-white/10
-                            dark:hover:text-white
-                          "
-                        >
-                          <Edit size={17} />
-                        </button>
-
-                        {/* ACTIVATE / DEACTIVATE */}
-
-                        <button
-                          type="button"
-                          title={
-                            author.status === "Active"
-                              ? "Deactivate author"
-                              : "Activate author"
-                          }
                           onClick={() =>
                             toggleStatus(author.id)
                           }
-                          className={`
-                            rounded-lg
-                            border
-                            p-2
-                            transition
-
-                            ${
-                              author.status === "Active"
-                                ? `
-                                  border-red-300
-                                  bg-white
-                                  text-red-500
-                                  hover:bg-red-50
-
-                                  dark:border-red-500/40
-                                  dark:bg-transparent
-                                  dark:text-red-400
-                                  dark:hover:bg-red-500/10
-                                `
-                                : `
-                                  border-green-300
-                                  bg-white
-                                  text-green-600
-                                  hover:bg-green-50
-
-                                  dark:border-green-500/40
-                                  dark:bg-transparent
-                                  dark:text-green-400
-                                  dark:hover:bg-green-500/10
-                                `
-                            }
-                          `}
+                          className="rounded-lg border px-3 py-2 text-xs hover:bg-gray-100"
                         >
-                          {author.status === "Active" ? (
-                            <UserX size={17} />
-                          ) : (
-                            <UserCheck size={17} />
-                          )}
+                          {author.status === "Active"
+                            ? "Block"
+                            : "Unblock"}
                         </button>
 
-                        {/* DELETE */}
-
                         <button
-                          type="button"
-                          title="Delete author"
                           onClick={() =>
                             deleteAuthor(author.id)
                           }
-                          className="
-                            rounded-lg
-                            border
-                            border-red-300
-                            bg-white
-                            p-2
-                            text-red-500
-                            transition
-
-                            hover:bg-red-50
-                            hover:text-red-600
-
-                            dark:border-red-500/40
-                            dark:bg-transparent
-                            dark:text-red-400
-                            dark:hover:bg-red-500/10
-                            dark:hover:text-red-300
-                          "
+                          className="rounded-lg border p-2 text-red-500 hover:bg-red-50"
                         >
                           <Trash2 size={17} />
                         </button>
@@ -732,35 +312,7 @@ export default function AdminAuthorsPage() {
 
           </div>
 
-        ) : (
-
-          /* =================================================
-              NO AUTHORS
-          ================================================= */
-
-          <div className="p-12 text-center">
-
-            <Users
-              size={45}
-              className="
-                mx-auto
-                mb-4
-                text-gray-300
-                dark:text-gray-600
-              "
-            />
-
-            <h2 className="font-semibold text-gray-800 dark:text-white">
-              No authors found
-            </h2>
-
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Try a different search.
-            </p>
-
-          </div>
-
-        )}
+        </div>
 
       </div>
     </div>

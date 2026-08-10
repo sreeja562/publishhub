@@ -48,11 +48,13 @@ export default function FeaturedArticle() {
             <span>⏱️ 8 min read</span>
           </div>
 
+        {/* Mobile View All */}
+        <div className="mt-6 sm:hidden">
           <Link
             href="/articles/1"
             className="mt-8 inline-block rounded-lg bg-[#7C3AED] px-6 py-3 font-semibold text-white transition hover:bg-[#6D28D9]"
           >
-            Read More
+            View all articles →
           </Link>
 
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   Search,
@@ -81,12 +82,12 @@ export default function AdminArticlesPage() {
       current.map((article) =>
         article.id === id
           ? {
-              ...article,
-              status:
-                article.status === "Published"
-                  ? "Unpublished"
-                  : "Published",
-            }
+            ...article,
+            status:
+              article.status === "Published"
+                ? "Unpublished"
+                : "Published",
+          }
           : article
       )
     );
